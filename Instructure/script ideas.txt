@@ -1,0 +1,96 @@
+The Canvas Things
+-----------------
+Assignments:
+    Copy Assignment overrides
+    
+Pages:
+    DONE - Create Pages
+    Done - Get Pages 
+    Done - Update a page
+    Delete a page
+    Delete all Pages
+
+
+Discussions:
+    DONE - Create Discussions 
+    Update discussion
+    DONE - Get Discussions 
+    DONE - Delete discussion
+    Done - announcements
+    DONE - Get announcements
+
+Classic Quizzes:
+    DONE - Create quizzes
+    Update quizzes
+    DONE - Get quizzes
+    copy question banks
+
+New Quizzes:
+    Move Item banks
+    
+Modules:
+    Create modules
+    Get Modules
+    Add item to modules
+    Add requirement to modules
+    Add pre-req to modules
+    Re-lock moodules
+    Delete empty modules
+    Delete all modules
+
+Sections:
+    DONE - Create Sections
+    DONE - delete a Sections
+    DONE - delete all sections
+    DONE - get sections
+
+Enrollments:
+    Move enrollments to different section
+    add enrollments back to correct section after restoring deleted course
+
+Communication:
+    get users Communication channels
+    get active users conversation messages
+    get deleted user conversation messages
+    get conversation messages between users
+    delete messages sent individually from one person
+    remove supression/bounce count
+
+Users:
+    terminate all users tokens
+    remove all approved integrations
+    get users with UUIDs
+
+Migration: 
+    move/copy submission from one quiz to another
+
+Submission:
+    submit to a discussion
+    submit text assignment
+    submit file upload assignment
+    submit to quiz
+
+Files:
+    Upload file
+    delete file
+    Get document ID (canvasDos)
+
+UI:
+    add masquerade link on the courses/id/users page
+
+
+Catalog
+----------------
+DONE - list orders
+
+Canvas UI
+-----------
+do something about the aweful rubric selector
+
+Tools utilities
+--------------
+multiple course selector
+    select multiple courses for some options
+
+header selector 
+    select which headers to include in the csv

@@ -105,3 +105,6 @@ dist
 
 # my config files
 *config.js
+
+# csv data files
+*.csv

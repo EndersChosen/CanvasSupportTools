@@ -60,6 +60,8 @@ Users:
     terminate all users tokens
     remove all approved integrations
     get users with UUIDs
+    Update passwords for users from csv
+    list all users roles
 
 Migration: 
     move/copy submission from one quiz to another

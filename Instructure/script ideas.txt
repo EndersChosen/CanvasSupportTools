@@ -53,7 +53,7 @@ Communication:
     get active users conversation messages
     get deleted user conversation messages
     get conversation messages between users
-    delete messages sent individually from one person
+    DONE - delete messages sent individually from one person
     remove supression/bounce count
 
 Users:

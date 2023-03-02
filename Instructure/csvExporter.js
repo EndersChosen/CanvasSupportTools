@@ -1,11 +1,12 @@
 // csvExporter.js
 const fs = require('fs');
+const path = require('path');
 
-function exportToCSV(data) {
+function exportToCSV(data, fileName = 'MyCSV') {
     console.log('writing to file');
     let csvHeaders = [];
 
-    const wStream = fs.createWriteStream('./myTest.csv');
+    const wStream = fs.createWriteStream(`${path.join(__dirname, fileName)}.csv`);
 
     try {
         console.log('Geting headers');

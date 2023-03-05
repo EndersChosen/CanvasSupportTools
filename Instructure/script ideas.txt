@@ -83,6 +83,11 @@ Files:
 UI:
     add masquerade link on the courses/id/users page
 
+Sub-Accounts
+    create new Sub-Accounts
+    get sub-Accounts
+    delete sub-accounts
+
 
 Catalog
 ----------------

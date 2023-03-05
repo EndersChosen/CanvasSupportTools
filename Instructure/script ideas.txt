@@ -50,11 +50,14 @@ Enrollments:
 
 Communication:
     get users Communication channels
-    get active users conversation messages
-    get deleted user conversation messages
+    remove supression/bounce count
+
+Conversations:
+    DONE - get conversation messages 
+    get deleted conversation messages
     get conversation messages between users
     DONE - delete messages sent individually from one person
-    remove supression/bounce count
+
 
 Users:
     terminate all users tokens

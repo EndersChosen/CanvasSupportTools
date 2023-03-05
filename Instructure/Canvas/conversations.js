@@ -97,13 +97,17 @@ async function bulkDelete(userID, messageFilter) {
     console.log(filteredConversations.length);
 }
 
-(async () => {
-    // let theConversations = await getConversations(26);
-    // console.log('My user had this many', theConversations.length);
+// (async () => {
+//     // let theConversations = await getConversations(26);
+//     // console.log('My user had this many', theConversations.length);
 
-    //await deleteForAll(1466);
+//     //await deleteForAll(1466);
 
-    await bulkDelete(26, 'This is a test')
-    console.log('Finsihed');
+//     await bulkDelete(26, 'This is a test')
+//     console.log('Finsihed');
 
-})();
+// })();
+
+modules.export = {
+    getConversations, bulkDelete, deleteForAll
+};

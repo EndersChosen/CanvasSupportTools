@@ -24,6 +24,7 @@ Classic Quizzes:
     Update quizzes
     DONE - Get quizzes
     copy question banks
+    export quizzes to csv
 
 New Quizzes:
     Move Item banks

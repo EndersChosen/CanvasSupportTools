@@ -11,11 +11,12 @@ async function getDiscussions(courseID = '', discussions = [], onlyAnnouncements
     let myDiscussions = discussions;
 
     // check to see if the full url was passed as the course id
-    if (typeof courseID === 'number')
-        myURL = `/courses/${courseID}/discussion_topics?per_page=100&only_announcements=${onlyAnnouncements}`;
+    if (!isNaN(courseID))
+        myURL = `/courses/${courseID}/discussion_topics?per_page=100`;
     else
         myURL = courseID;
 
+    console.log(myURL);
     const response = await errorCheck.errorCheck(async () => {
         return await axios.get(myURL);
     });
@@ -29,6 +30,18 @@ async function getDiscussions(courseID = '', discussions = [], onlyAnnouncements
     }
 
     return myDiscussions;
+}
+
+async function getOnlyDiscussions(courseID = '') {
+    let discussionList = await getDiscussions(courseID);
+    console.log(discussionList.length);
+    let onlyDiscussions = discussionList.filter((discussion) => {
+        if (discussion.assignment_id === null && discussion.last_reply_at === null) {
+            return discussion;
+        }
+    });
+
+    return onlyDiscussions;
 }
 
 async function createDiscussion(courseID, num, isAnnouncement = false) {
@@ -100,10 +113,16 @@ async function deleteDiscussion(courseID, topicID) {
     return response.data;
 }
 
-async function deleteAllDiscussions(courseID) {
+async function deleteAllDiscussions(courseID, discussionsOnly = false) {
     console.log(`Deleting dicussions in ${courseID}`);
     let index = 0;
-    let discussionList = await getDiscussions(courseID);
+    let discussionList = [];
+    if (discussionsOnly === false) {
+        discussionList = await getDiscussions(courseID);
+    } else {
+        console.log('getting only discussions');
+        discussionList = await getOnlyDiscussions(courseID);
+    }
     let loops = Math.floor(discussionList.length / 40);
     let requests = [];
 
@@ -167,22 +186,24 @@ async function deleteAllDiscussions(courseID) {
     // }
 }
 
-// (async () => {
-//     // let startTime = performance.now();
-//     // console.log(await createDiscussion(6005, 1, true));
-//     // let endTime = performance.now();
-//     // console.log(`took ${Math.floor(endTime - startTime) / 1000}`);
-//     // console.log(await deleteDiscussion(6005, 4988));
-//     // let theDiscussions = await getDiscussions(6005);
-//     //console.log(`Announcement: `, await getDiscussions(6005, [], true));
+(async () => {
+    // let startTime = performance.now();
+    // console.log(await createDiscussion(6005, 1, true));
+    // let endTime = performance.now();
+    // console.log(`took ${Math.floor(endTime - startTime) / 1000}`);
+    // console.log(await deleteDiscussion(6005, 4988));
+    // let theDiscussions = await getDiscussions(1987);
+    // console.log(theDiscussions.length);
+    //console.log(`Announcement: `, await getDiscussions(6005, [], true));
 
 
-//     // let startTime = performance.now();
-//     // await deleteAllDiscussions(6005);
-//     // let endTime = performance.now();
-//     // console.log(`Deleted all discussions in ${Math.floor(endTime - startTime) / 1000} seconds`);
-// })();
+    let startTime = performance.now();
+    await deleteAllDiscussions(37695, true);
+    //let theDiscussions = await getOnlyDiscussions(37695);
+    let endTime = performance.now();
+    console.log(`Time: ${Math.floor(endTime - startTime) / 1000} seconds`);
+})();
 
-module.exports = {
-    getDiscussions, createDiscussion, deleteAllDiscussions, deleteDiscussion
-};
+// module.exports = {
+//     getDiscussions, createDiscussion, deleteAllDiscussions, deleteDiscussion
+// };

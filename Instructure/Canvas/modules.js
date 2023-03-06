@@ -2,9 +2,24 @@
 const config = require('./config');
 const pagination = require('../pagination');
 const errorCheck = require('../error_check');
+const { requester } = require('../utilities');
 
-async function createModule(course, num = 1) {
+const axios = config.instance;
 
+async function createModule(courseID, num = 1) {
+    console.log('Creating module(s)');
+
+    let myURL = `courses/${courseID}/modules`;
+    let params = {
+        module: {
+            name: `Module Name`
+        }
+    };
+
+    //const response = await axios.post(myURL, params);
+    const response = await requester(myURL, num, 'post', 'module', params);
+    console.log(response);
+    return 'Finished';
 }
 
 async function getModules(url, modules = []) {
@@ -30,6 +45,13 @@ async function getModules(url, modules = []) {
     return theModules;
 }
 
+async function deleteAllModules(courseID) {
+
+}
+
 (async () => {
-    let myModules = await getModules()
-})
+    let newModules = await createModule(6007, 2);
+    console.log(newModules);
+    // let myModules = await getModules(6005)
+    // console.log(myModules.length);
+})();

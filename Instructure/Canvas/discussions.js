@@ -33,6 +33,7 @@ async function getDiscussions(courseID = '', discussions = [], onlyAnnouncements
 }
 
 async function getOnlyDiscussions(courseID = '') {
+    console.log('Getting non-assignment discussions with no replies');
     let discussionList = await getDiscussions(courseID);
     console.log(discussionList.length);
     let onlyDiscussions = discussionList.filter((discussion) => {
@@ -127,10 +128,7 @@ async function deleteAllDiscussions(courseID, discussionsOnly = false) {
     let requests = [];
 
     console.log(discussionList.length);
-    // let startTime = performance.now();
-    // await axios.delete(`courses/${courseID}/discussion_topics/${discussionList[index].id}`)
-    // let endTime = performance.now();
-    // console.log(`Deleting one discussion took ${Math.floor(endTime - startTime) / 1000} seconds`);
+
 
     while (loops > 0) {
         console.log('Inside while');
@@ -186,24 +184,24 @@ async function deleteAllDiscussions(courseID, discussionsOnly = false) {
     // }
 }
 
-(async () => {
-    // let startTime = performance.now();
-    // console.log(await createDiscussion(6005, 1, true));
-    // let endTime = performance.now();
-    // console.log(`took ${Math.floor(endTime - startTime) / 1000}`);
-    // console.log(await deleteDiscussion(6005, 4988));
-    // let theDiscussions = await getDiscussions(1987);
-    // console.log(theDiscussions.length);
-    //console.log(`Announcement: `, await getDiscussions(6005, [], true));
+// (async () => {
+//     // let startTime = performance.now();
+//     // console.log(await createDiscussion(6005, 1, true));
+//     // let endTime = performance.now();
+//     // console.log(`took ${Math.floor(endTime - startTime) / 1000}`);
+//     // console.log(await deleteDiscussion(6005, 4988));
+//     // let theDiscussions = await getDiscussions(1987);
+//     // console.log(theDiscussions.length);
+//     //console.log(`Announcement: `, await getDiscussions(6005, [], true));
 
 
-    let startTime = performance.now();
-    await deleteAllDiscussions(37695, true);
-    //let theDiscussions = await getOnlyDiscussions(37695);
-    let endTime = performance.now();
-    console.log(`Time: ${Math.floor(endTime - startTime) / 1000} seconds`);
-})();
+//     let startTime = performance.now();
+//     await deleteAllDiscussions(37695, true);
+//     //let theDiscussions = await getOnlyDiscussions(37695);
+//     let endTime = performance.now();
+//     console.log(`Time: ${Math.floor(endTime - startTime) / 1000} seconds`);
+// })();
 
-// module.exports = {
-//     getDiscussions, createDiscussion, deleteAllDiscussions, deleteDiscussion
-// };
+module.exports = {
+    getDiscussions, createDiscussion, deleteAllDiscussions, deleteDiscussion
+};

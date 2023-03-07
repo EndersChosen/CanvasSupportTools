@@ -9,6 +9,7 @@
 
 const config = require('./config.js');
 const pagination = require('../pagination.js');
+const csvExporter = require('../csvExporter');
 const questionAsker = require('../questionAsker');
 const readline = require('readline');
 
@@ -62,27 +63,26 @@ async function createAssignments(course, number) {
     }
 }
 
-async function getAssignments(url) {
+async function getAssignments(courseID) {
+    console.log('Getting assignment(s)');
 
     let assignmentList = [];
-
-    console.log('Getting assignment(s) from', url);
+    let myURL;
+    if (isNaN(courseID))
+        myURL = courseID;
+    else
+        myURL = `courses/${courseID}/assignments?per_page=100`;
 
     try {
-
-        const response = await axios.get(url);
+        const response = await axios.get(myURL);
         const nextPage = pagination.getNextPage(response.headers.get('link'));
-        if (nextPage != false) {
-
+        if (nextPage !== false) {
             assignmentList = await getAssignments(nextPage);
         }
 
         for (let assignment of response.data) {
-
-
             assignmentList.push(assignment);
         }
-
     } catch (error) {
         if (error.response) {
             console.log(error.response.status);
@@ -96,13 +96,15 @@ async function getAssignments(url) {
     return assignmentList;
 }
 
-async function deleteNoSubmissionAssignments(url) {
+async function deleteNoSubmissionAssignments(courseID) {
+    console.log('Deleting assignments with no submissions');
 
+    let myURL = `courses/${courseID}/assignments`;
     let assignments = [];
 
     try {
         // getting all assignments to filter later
-        assignments = await getAssignments(course);
+        assignments = await getAssignments(courseID);
     } catch (error) {
         console.log('This is the error', error)
     }
@@ -117,18 +119,29 @@ async function deleteNoSubmissionAssignments(url) {
         console.log('No assignments to delete');
         return;
     }
-    console.log('Total assignments', assignments.length);
-    console.log('Total with no submissions', noSubmissionAssignments.length);
-
     // ------------------------------------
     // Figure out how to prompt user if they're sure
     // ------------------------------------
 
-    // console.log(`Found ${noSubmissionAssignments.length} assignment(s) with no submissions are you sure you want to delete them?`);
+    const answer = await questionAsker.questionDetails(`Found ${noSubmissionAssignments.length} assignments with no submissions. \nAre you sure you want to delete them?`);
+    questionAsker.close();
+    if (answer === 'no') {
+        return;
+    }
+
+    csvExporter.exportToCSV(noSubmissionAssignments, 'No_Submissions');
+
+    console.log('Total assignments', assignments.length);
+    console.log('Total with no submissions', noSubmissionAssignments.length);
+
 
     console.log('Deleting assignments with no submissions');
     const startTime = performance.now();
     let deleteCounter = 0;
+
+    //***********************************************
+    // Make this better using promise.all()
+    //***********************************************
     for (let assignment of noSubmissionAssignments) {
         try {
             await axios.delete(url + assignment.id);
@@ -141,8 +154,8 @@ async function deleteNoSubmissionAssignments(url) {
     console.log(`Deleted ${deleteCounter} assignment(s) in ${Math.floor(endTime - startTime) / 1000} seconds`);
 }
 
-async function deleteAllAssignments(url) {
-    let assignments = await getAssignments(url);
+async function deleteAllAssignments(courseID) {
+    let assignments = await getAssignments(courseID);
     for (const assignment of assignments) {
         try {
             const response = await axios.delete(url + `/${assignment.id}`)
@@ -152,52 +165,11 @@ async function deleteAllAssignments(url) {
     }
 }
 
-// // asks the import questions
-// async function questionAsker(question) {
-//     return new Promise(resolve => {
-//         rl.question(question, answer => {
-//             resolve(answer);
-//         });
-//     });
-// }
 
 // the function that does the stuff
-// (async () => {
-
-//     let theCourse;
-//     let numOfAssignments;
-//     let myAssignments;
-
-
-//     let option = await questionAsker.questionDetails('What do you want to do? ("get", "create", "delete"');
-//     let url = '';
-
-//     switch (option) {
-//         case 'get':
-//             theCourse = await questionAsker.questionDetails('What course?');
-//             url = `courses/${theCourse}/assignments`;
-//             myAssignments = await getAssignments(url);
-//             console.log(myAssignments);
-//             console.log(myAssignments.length);
-//             break;
-//         case 'create':
-//             console.log('In the switch create option')
-//             numOfAssignments = await questionAsker.questionDetails('How many assignments?');
-//             theCourse = await questionAsker.questionDetails('What course?');
-//             createAssignments(theCourse, numOfAssignments);
-//             break;
-//         case 'delete':
-//             theCourse = await questionAsker.questionDetails('What course?');
-//             url = `courses/${theCourse}/assignments`;
-//             deleteNoSubmissionAssignments(url);
-//             //deleteAllAssignments(url);
-//             console.log('Deleted assignments');
-//             break;
-//         default:
-//             break;
-//     }
-//     questionAsker.close();
-// })();
+(async () => {
+    await deleteNoSubmissionAssignments(2165);
+})();
 
 module.exports = {
     createAssignments, getAssignments, deleteNoSubmissionAssignments, deleteAllAssignments

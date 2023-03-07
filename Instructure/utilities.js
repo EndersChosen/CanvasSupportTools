@@ -19,6 +19,7 @@ async function createRequester(method, url, params, num, endpoint) {
         console.log('Inside while');
         for (let i = 0; i < 40; i++) {
             console.log('adding requests to promise');
+            newParams[endpoint].name = `${endpoint} ${index + 1}`;
             // console.log(`The index is ${ index }, the id is ${ discussionList[index].id }`);
             try {
                 requests.push(axios({
@@ -43,13 +44,7 @@ async function createRequester(method, url, params, num, endpoint) {
         console.log('Processed requests');
         // after processing the requests wait for 2 seconds to all the 
         // api rate limit to calm down before doing any more requests
-        await (function wait() {
-            return new Promise(resolve => {
-                setTimeout(() => {
-                    resolve();
-                }, 2000);
-            })
-        })();
+        holdPlease(2000);
         // reset the requests array and lower loop value by 1
         requests = [];
         loops--;
@@ -82,6 +77,11 @@ async function createRequester(method, url, params, num, endpoint) {
     return arrayOfResults;
 }
 
+function holdPlease(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 module.exports = {
-    requester
+    createRequester
 };
+

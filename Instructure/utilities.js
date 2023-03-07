@@ -4,7 +4,7 @@ const { instance } = require('./Canvas/config');
 const axios = instance;
 // add utilities here
 
-async function requester(url, num, method, endpoint, params = {}, id = null,) {
+async function createRequester(method, url, params, num, endpoint) {
     let index = 0;
     let loops = Math.floor(num / 40);
     let requests = [];

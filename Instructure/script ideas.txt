@@ -83,6 +83,7 @@ Files:
 
 UI:
     add masquerade link on the courses/id/users page
+    Paginate assignments page
 
 Sub-Accounts
     create new Sub-Accounts

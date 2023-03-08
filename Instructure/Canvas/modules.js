@@ -56,13 +56,29 @@ async function deleteAllModules(courseID) {
     console.log('Finished');
 }
 
+async function deleteEmptyModules(courseID) {
+    console.log('Deleting empty modules');
+
+    const allModules = await getModules(courseID);
+    const emptyModules = allModules.filter((module) => {
+        if (module.items_count === 0) {
+            return module;
+        }
+    });
+    await deleteRequester(emptyModules, courseID, 'modules');
+    console.log('Finished');
+}
+
 (async () => {
-    let newModules = await createModule(6006, 34);
-    console.log(newModules);
+    // let newModules = await createModule(6006, 34);
+    // console.log(newModules);
 
     // let myModules = await getModules(6006)
     // console.log(myModules.length);
 
     // await deleteAllModules(6006);
     // console.log('Completed');
+
+    await deleteEmptyModules(6006);
+    console.log('Completed');
 })();

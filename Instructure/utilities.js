@@ -7,6 +7,7 @@ const axios = instance;
 async function createRequester(method, url, params, num, endpoint) {
     let index = 1;
     let apiLimit = 35
+    let waitTime = 2000;
     let loops = Math.floor(num / apiLimit);
     let requests = [];
     let newParams = params;
@@ -51,7 +52,7 @@ async function createRequester(method, url, params, num, endpoint) {
         console.log('Processed requests');
         // after processing the requests wait for 2 seconds to all the 
         // api rate limit to calm down before doing any more requests
-        holdPlease(2000);
+        holdPlease(waitTime);
         // reset the requests array and lower loop value by 1
         requests = [];
         loops--;
@@ -97,7 +98,8 @@ async function createRequester(method, url, params, num, endpoint) {
 }
 
 async function deleteRequester(content, courseID, endpoint) {
-    let apiLimit = 40;
+    let apiLimit = 35;
+    let waitTime = 2000;
     let loops = Math.floor(content.length / apiLimit);
     let requests = [];
     let index = 0;
@@ -112,7 +114,7 @@ async function deleteRequester(content, courseID, endpoint) {
         }
         await Promise.all(requests);
         console.log('Processed requests');
-        holdPlease(2000);
+        holdPlease(waitTime);
         requests = [];
         loops--;
     }

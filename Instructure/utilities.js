@@ -5,8 +5,9 @@ const axios = instance;
 // add utilities here
 
 async function createRequester(method, url, params, num, endpoint) {
-    let index = 0;
-    let loops = Math.floor(num / 40);
+    let index = 1;
+    let apiLimit = 35
+    let loops = Math.floor(num / apiLimit);
     let requests = [];
     let newParams = params;
     let arrayOfResults = [];
@@ -17,9 +18,13 @@ async function createRequester(method, url, params, num, endpoint) {
     // all the requests in parallel
     while (loops > 0) {
         console.log('Inside while');
-        for (let i = 0; i < 40; i++) {
+        for (let i = 0; i < apiLimit; i++) {
             console.log('adding requests to promise');
-            newParams[endpoint].name = `${endpoint} ${index + 1}`;
+            newParams[endpoint].name = `${endpoint} ${index}`;
+            // console.log(`The position is ${params[endpoint].position}`);
+            // if (params[endpoint].position) {
+            //     newParams[endpoint].position = index;
+            // }
             // console.log(`The index is ${ index }, the id is ${ discussionList[index].id }`);
             try {
                 requests.push(axios({
@@ -32,8 +37,10 @@ async function createRequester(method, url, params, num, endpoint) {
             }
             index++;
         }
+        console.log('Finished adding requests');
         try {
             results = await Promise.all(requests);
+            console.log('Processed requests');
             arrayOfResults.push(...results.map((result) => {
                 return result.data;
             }));
@@ -51,9 +58,19 @@ async function createRequester(method, url, params, num, endpoint) {
     }
     console.log('Outside while');
     // after doing all mulitple of 40 finishe the remainder of the requests
-    for (let i = 0; i < num % 40; i++) {
+    for (let i = 0; i < num % apiLimit; i++) {
         console.log('adding requests to promise');
-        newParams[endpoint].name = `${endpoint} ${index + 1}`;
+        newParams[endpoint].name = `${endpoint} ${index}`;
+
+        //****************************
+        // Had to remove position because it was causing deadlocks on creation
+        //***************************
+
+        // if (params[endpoint].position) {
+        //     console.log('Updating position');
+        //     newParams[endpoint].position = index;
+        //     console.log(newParams[endpoint].position);
+        // }
         try {
             requests.push(axios({
                 method: method,
@@ -65,8 +82,10 @@ async function createRequester(method, url, params, num, endpoint) {
         }
         index++;
     }
+    console.log('Finished adding requests');
     try {
         results = await Promise.all(requests);
+        console.log('Finished processing requests');
         arrayOfResults.push(...results.map((result) => {
             return result.data;
         }));
@@ -77,11 +96,42 @@ async function createRequester(method, url, params, num, endpoint) {
     return arrayOfResults;
 }
 
+async function deleteRequester(content, courseID, endpoint) {
+    let apiLimit = 40;
+    let loops = Math.floor(content.length / apiLimit);
+    let requests = [];
+    let index = 0;
+
+    while (loops > 0) {
+        for (let i = 0; i < apiLimit; i++) {
+            requests.push(axios({
+                method: 'delete',
+                url: `/courses/${courseID}/${endpoint}/${content[index].id}`
+            }));
+            index++;
+        }
+        await Promise.all(requests);
+        console.log('Processed requests');
+        holdPlease(2000);
+        requests = [];
+        loops--;
+    }
+    for (let i = 0; i < content.length % apiLimit; i++) {
+        requests.push(axios({
+            method: 'delete',
+            url: `/courses/${courseID}/${endpoint}/${content[index].id}`
+        }));
+        index++;
+    }
+    await Promise.all(requests);
+    console.log('Processing last requests');
+}
+
 function holdPlease(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 module.exports = {
-    createRequester
+    createRequester, deleteRequester
 };
 

@@ -30,14 +30,14 @@ New Quizzes:
     Move Item banks
     
 Modules:
-    Create modules
-    Get Modules
+    DONE - Create modules
+    DONE - Get Modules
     Add item to modules
     Add requirement to modules
     Add pre-req to modules
     Re-lock moodules
-    Delete empty modules
-    Delete all modules
+    DONE - Delete empty modules
+    DONE - Delete all modules
 
 Sections:
     DONE - Create Sections

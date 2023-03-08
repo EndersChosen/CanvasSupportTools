@@ -60,4 +60,3 @@ let myParams = {
     let users = [{ name: 'myname', skip_registration: true }];
     console.log(users);
 })();
-

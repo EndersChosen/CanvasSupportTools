@@ -1,0 +1,24 @@
+Top
+    Domain
+    Token 
+    Full API call  (Dynamically generated from options)
+
+First
+    Action
+
+Second
+    Endpoint
+
+third
+    Details (things to customize endpoints)
+        Number (if getting)
+        Name
+        Items
+        etc
+
+
+Steps to make an API call in Canvas
+    Token
+    Domain
+        Endpoint
+        Action

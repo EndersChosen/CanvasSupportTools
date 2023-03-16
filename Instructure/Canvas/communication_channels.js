@@ -1,25 +1,36 @@
 // communication_channels.js
-
 const { instance } = require('./config');
+const { getRegion } = require('../utilities');
+const questionAsker = require('../questionAsker');
 
 const axios = instance;
-
 
 async function getCommunicationChannels() {
 
 }
 
-async function removeFromSuppressionList() {
-    const response = await axios({
-        method: 'DELETE',
-        url: ''
-    })
+async function removeFromSuppressionList(region, email) {
+    try {
+        const response = await axios({
+            method: 'DELETE',
+            url: `${region}${email}`
+        });
+        console.log(`Removed ${email} from supression list`, response.status);
+        return;
+    } catch (error) {
+        console.log(error.response.status, error.message);
+    }
+
 }
 
 (async () => {
-    // axios.defaults.baseURL = await setDomain();
-    // console.log(axios.defaults.baseURL);
+    axios.defaults.baseURL = await questionAsker.questionDetails('What domain: ');
+    const email = await questionAsker.questionDetails('What email: ');
+    questionAsker.close();
 
-    //console.log(await getRegion('ckruger.instructure.com'));
-    console.log('test');
+    const region = await getRegion(axios.defaults.baseURL);
+    if (region)
+        removeFromSuppressionList(region, email)
+    else
+        console.log('error with region');
 })();

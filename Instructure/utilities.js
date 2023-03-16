@@ -1,5 +1,5 @@
 // utilities.js
-const { instance } = require('./Canvas/config');
+const { instance, getMyRegion } = require('./Canvas/config');
 
 const axios = instance;
 // add utilities here
@@ -133,6 +133,30 @@ function holdPlease(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
+async function getRegion(url) {
+    const response = await axios({
+        method: "GET",
+        url: `https://${url}/api/v1/accounts/self`
+    });
+    if (!response.headers.get('x-canvas-meta')) {
+        console.log(response.headers);
+        console.log('Unable to find region');
+        return false;
+    }
+    const metaHeaders = response.headers.get('x-canvas-meta').split(';');
+    const metaObject = metaHeaders
+        .filter((element) => {
+            const [key, value] = element.split('=');
+            if (key === 'z') {
+                return element;
+            }
+        })
+        .map(element => element.split('=')[1])
+        .map(element => element.split('-')[0]);
+
+    return getMyRegion(metaObject[0]);
+}
+
 module.exports = {
-    createRequester, deleteRequester, holdPlease
+    createRequester, deleteRequester, holdPlease, getRegion
 };

@@ -70,5 +70,5 @@ async function multiRegister(num) {
 })();
 
 // module.exports = {
-//     registerUser
+//     registerUser,multiRegister,getUserRegistrations
 // }

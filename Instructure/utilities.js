@@ -134,5 +134,5 @@ function holdPlease(ms) {
 }
 
 module.exports = {
-    createRequester, deleteRequester
+    createRequester, deleteRequester, holdPlease
 };

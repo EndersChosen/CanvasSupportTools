@@ -69,12 +69,14 @@ Users:
 
 Migration: 
     move/copy submission from one quiz to another
+    undo a migration on a selected item
 
 Submission:
     submit to a discussion
     submit text assignment
     submit file upload assignment
     submit to quiz
+    transfer submission from different assignment
 
 Files:
     Upload file
@@ -84,6 +86,7 @@ Files:
 UI:
     add masquerade link on the courses/id/users page
     Paginate assignments page
+    show admin role on users page
 
 Sub-Accounts
     create new Sub-Accounts
@@ -94,6 +97,7 @@ Sub-Accounts
 Catalog
 ----------------
 DONE - list orders
+register users
 
 Canvas UI
 -----------
@@ -110,4 +114,7 @@ header selector
 Splunk
     Who done it? (Delete requests)
     IP Address users
+
+Create content with course creation
+    When using the create course option add the ability to also add content
     

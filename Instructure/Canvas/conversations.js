@@ -2,12 +2,14 @@
 const config = require('./config');
 const pagination = require('../pagination');
 const csvExporter = require('../csvExporter');
+const questionAsker = require('../questionAsker');
 
 const axios = config.instance;
 
-async function getConversations(user, url = 'conversations', scope = 'inbox', conversations = []) {
-    console.log('Getting conversations');
+async function getConversations(user, url = 'conversations', scope = 'inbox', conversations = [], pageCount = 0) {
+    console.log('Getting conversations: ');
 
+    let pageCounter = pageCount;
     let myConversations = conversations;
     let myURL = '';
     if (url === 'conversations') {
@@ -23,7 +25,9 @@ async function getConversations(user, url = 'conversations', scope = 'inbox', co
 
     let nextPage = pagination.getNextPage(response.headers.get('link'));
     if (nextPage !== false) {
-        myConversations = await getConversations(user, nextPage, null, myConversations);
+        console.log('Page: ', pageCount);
+        pageCount++;
+        myConversations = await getConversations(user, nextPage, null, myConversations, pageCount);
     } else {
         console.log('Last page');
     }
@@ -38,28 +42,62 @@ async function deleteForAll(conversationID) {
 }
 
 async function bulkDelete(userID, messageFilter) {
-    let allConversations = await getConversations(userID);
-    let filteredConversations = allConversations.filter((conversation) => {
-        if (conversation.subject === messageFilter)
-            return conversation;
-    });
-    csvExporter.exportToCSV(filteredConversations, 'deletedConverstations');
+    let allConversations = await getConversations(userID, 'conversations', 'inbox');
+    let myFilter = messageFilter;
+    let filteredConversations
 
-    let loops = Math.floor(filteredConversations.length / 40);
-    let requests = [];
-    let index = 0;
+    while (true) {
+        filteredConversations = allConversations.filter((conversation) => {
+            if (conversation.subject === myFilter)
+                return conversation;
+        });
+        let areYouSure = await questionAsker.questionDetails(`Found ${filteredConversations.length} are you sure you want to delete them?(y/n) `);
+        if (areYouSure === 'n')
+            break;
+        csvExporter.exportToCSV(filteredConversations, 'deletedConverstations');
+
+        let loops = Math.floor(filteredConversations.length / 40);
+        let requests = [];
+        let index = 0;
 
 
-    // adding requests to an array to process in parallel
-    while (loops > 0) {
-        console.log('Inside while');
-        for (let i = 0; i < 40; i++) {
+        // adding requests to an array to process in parallel
+        while (loops > 0) {
+            console.log('Inside while');
+            for (let i = 0; i < 40; i++) {
+                console.log('adding reqeusts to promise');
+                try {
+                    requests.push(deleteForAll(filteredConversations[index].id));
+                } catch (error) {
+                    console.log(`Error adding ${url}`, error.message);
+                }
+                index++;
+            }
+            try {
+                await Promise.all(requests);
+            } catch (error) {
+                console.log('There was an error', error.message, error.url);
+                return;
+            }
+            console.log('Processed requests');
+            await (function wait() {
+                return new Promise(resolve => {
+                    setTimeout(() => {
+                        resolve();
+                    }, 2000);
+                })
+            })();
+            requests = [];
+            loops--;
+        }
+        for (let i = 0; i < filteredConversations.length % 40; i++) {
             console.log('adding reqeusts to promise');
             try {
                 requests.push(deleteForAll(filteredConversations[index].id));
             } catch (error) {
-                console.log(`Error adding ${url}`, error.message);
+                console.log(`error adding ${filteredConversations[index]} to array`);
             }
+            index++;
         }
         try {
             await Promise.all(requests);
@@ -67,47 +105,28 @@ async function bulkDelete(userID, messageFilter) {
             console.log('There was an error', error.message, error.url);
             return;
         }
-        console.log('Processed requests');
-        await (function wait() {
-            return new Promise(resolve => {
-                setTimeout(() => {
-                    resolve();
-                }, 2000);
-            })
-        })();
-        requests = [];
-        loops--;
-        index++;
+        let more = await questionAsker.questionDetails('Do you have more?(y/n) ');
+        if (more === 'y') {
+            myFilter = await questionAsker.questionDetails('What filter do you want to use? ');
+        } else
+            break;
     }
-    for (let i = 0; i < filteredConversations.length % 40; i++) {
-        console.log('adding reqeusts to promise');
-        try {
-            requests.push(deleteForAll(filteredConversations[index].id));
-        } catch (error) {
-            console.log(`error adding ${filteredConversations[index]} to array`);
-        }
-        index++;
-    }
-    try {
-        await Promise.all(requests);
-    } catch (error) {
-        console.log('There was an error', error.message, error.url);
-        return;
-    }
-    console.log(filteredConversations.length);
+    if (filteredConversations.length > 0)
+        console.log(filteredConversations.length);
+    questionAsker.close();
 }
 
-// (async () => {
-//     // let theConversations = await getConversations(26);
-//     // console.log('My user had this many', theConversations.length);
+(async () => {
+    // let theConversations = await getConversations(26);
+    // console.log('My user had this many', theConversations.length);
 
-//     //await deleteForAll(1466);
+    //await deleteForAll(1466);
 
-//     await bulkDelete(26, 'This is a test')
-//     console.log('Finsihed');
+    await bulkDelete(10, 'Test')
+    console.log('Finsihed');
 
-// })();
+})();
 
-modules.export = {
-    getConversations, bulkDelete, deleteForAll
-};
+// modules.export = {
+//     getConversations, bulkDelete, deleteForAll
+// };

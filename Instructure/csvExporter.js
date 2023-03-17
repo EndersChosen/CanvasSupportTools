@@ -6,7 +6,7 @@ function exportToCSV(data, fileName = 'MyCSV') {
     console.log('writing to file');
     let csvHeaders = [];
 
-    const wStream = fs.createWriteStream(`${path.join(__dirname, fileName)}.csv`);
+    const wStream = fs.createWriteStream(`${path.join(__dirname, fileName)}.csv`, { flags: 'a' });
 
     try {
         console.log('Geting headers');

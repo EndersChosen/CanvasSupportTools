@@ -44,8 +44,9 @@ async function deleteForAll(conversationID) {
 async function bulkDelete(userID, messageFilter) {
     let allConversations = await getConversations(userID, 'conversations', 'inbox');
     let myFilter = messageFilter;
-    let filteredConversations
+    let filteredConversations = [];
 
+    // continue looping for any exta messages that need to be deleted
     while (true) {
         filteredConversations = allConversations.filter((conversation) => {
             if (conversation.subject === myFilter)

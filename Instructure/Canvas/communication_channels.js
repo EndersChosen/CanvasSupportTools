@@ -20,7 +20,15 @@ async function removeFromSuppressionList(region, email) {
     } catch (error) {
         console.log(error.response.status, error.message);
     }
-
+    try {
+        const response = await axios({
+            method: 'POST',
+            url: `/accounts/self/bounced_communication_channels/reset?pattern=${email}`;
+        });
+        console.log('reset bounce count');
+    } catch (error) {
+        console.log('ERROR: ', error.response.status, error.message);
+    }
 }
 
 (async () => {

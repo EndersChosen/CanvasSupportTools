@@ -51,7 +51,7 @@ Enrollments:
 
 Communication:
     get users Communication channels
-    remove supression/bounce count
+    DONE - remove supression/bounce count
 
 Conversations:
     DONE - get conversation messages 
@@ -84,9 +84,9 @@ Files:
     Get document ID (canvasDos)
 
 UI:
-    add masquerade link on the courses/id/users page
+    DONE - add masquerade link on the courses/id/users page
     Paginate assignments page
-    show admin role on users page
+    DONE - show admin role on users page
 
 Sub-Accounts
     create new Sub-Accounts

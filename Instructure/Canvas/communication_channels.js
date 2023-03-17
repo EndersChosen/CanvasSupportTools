@@ -23,7 +23,7 @@ async function removeFromSuppressionList(region, email) {
     try {
         const response = await axios({
             method: 'POST',
-            url: `/accounts/self/bounced_communication_channels/reset?pattern=${email}`;
+            url: `/accounts/self/bounced_communication_channels/reset?pattern=${email}`
         });
         console.log('reset bounce count');
     } catch (error) {

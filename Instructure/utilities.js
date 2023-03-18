@@ -97,7 +97,7 @@ async function createRequester(method, url, params, num, endpoint) {
     return arrayOfResults;
 }
 
-async function deleteRequester(content, baseURL) {
+async function deleteRequester(content, baseURL, afterID = null) {
     // content = array of conversations
     // baseURL = /converations
     let apiLimit = 35;
@@ -106,11 +106,16 @@ async function deleteRequester(content, baseURL) {
     let requests = [];
     let index = 0;
 
+
     while (loops > 0) {
         for (let i = 0; i < apiLimit; i++) {
+            let myURL = `${baseURL}/${content[index].id}`;
+            if (afterID !== null)
+                myURL += `/${afterID}`;
+
             requests.push(axios({
                 method: 'delete',
-                url: `${baseURL}/${content[index].id}`
+                url: myURL
             }));
             index++;
         }
@@ -121,9 +126,13 @@ async function deleteRequester(content, baseURL) {
         loops--;
     }
     for (let i = 0; i < content.length % apiLimit; i++) {
+        let myURL = `${baseURL}/${content[index].id}`;
+        if (afterID !== null)
+            myURL += `/${afterID}`;
+
         requests.push(axios({
             method: 'delete',
-            url: `/courses/${courseID}/${endpoint}/${content[index].id}`
+            url: myURL
         }));
         index++;
     }

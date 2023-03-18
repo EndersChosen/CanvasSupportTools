@@ -46,6 +46,8 @@ async function bulkDelete(userID, messageFilter) {
     let allConversations = await getConversations(userID, 'conversations', 'inbox');
     let myFilter = messageFilter;
     let filteredConversations = [];
+    let more = '';
+
 
     // continue looping for any exta messages that need to be deleted
     while (true) {
@@ -54,8 +56,14 @@ async function bulkDelete(userID, messageFilter) {
                 return conversation;
         });
         let areYouSure = await questionAsker.questionDetails(`Found ${filteredConversations.length} are you sure you want to delete them?(y/n) `);
-        if (areYouSure === 'n')
-            break;
+        if (areYouSure === 'n') {
+            more = await questionAsker.questionDetails('Want to try another filter string?(y/n) ');
+            if (more === 'y') {
+                myFilter = await questionAsker.questionDetails('What filter do you want to use?');
+                continue;
+            } else
+                break;
+        }
         csvExporter.exportToCSV(filteredConversations, 'deletedConverstations');
 
         // let loops = Math.floor(filteredConversations.length / 40);
@@ -66,7 +74,7 @@ async function bulkDelete(userID, messageFilter) {
         // ******************************
         // deleteRequester(filtersConversations, 'conversations)
         // *******************************
-        deleteRequester(filteredConversations, 'conversations', 'delete_for_all');
+        await deleteRequester(filteredConversations, 'conversations', 'delete_for_all');
 
         // adding requests to an array to process in parallel
         // while (loops > 0) {
@@ -115,7 +123,7 @@ async function bulkDelete(userID, messageFilter) {
 
         if (filteredConversations.length > 0)
             console.log(`Deleted: ${filteredConversations.length} conversations`);
-        let more = await questionAsker.questionDetails('Do you have more?(y/n) ');
+        more = await questionAsker.questionDetails('Do you have more?(y/n) ');
         if (more === 'y') {
             myFilter = await questionAsker.questionDetails('What filter do you want to use? ');
         } else

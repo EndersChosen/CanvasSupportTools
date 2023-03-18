@@ -3,6 +3,7 @@ const config = require('./config');
 const pagination = require('../pagination');
 const csvExporter = require('../csvExporter');
 const questionAsker = require('../questionAsker');
+const { deleteRequester } = require('../utilities');
 
 const axios = config.instance;
 
@@ -57,63 +58,70 @@ async function bulkDelete(userID, messageFilter) {
             break;
         csvExporter.exportToCSV(filteredConversations, 'deletedConverstations');
 
-        let loops = Math.floor(filteredConversations.length / 40);
-        let requests = [];
-        let index = 0;
+        // let loops = Math.floor(filteredConversations.length / 40);
+        // let requests = [];
+        // let index = 0;
 
+
+        // ******************************
+        // deleteRequester(filtersConversations, 'conversations)
+        // *******************************
+        deleteRequester(filteredConversations, 'conversations', 'delete_for_all');
 
         // adding requests to an array to process in parallel
-        while (loops > 0) {
-            console.log('Inside while');
-            for (let i = 0; i < 40; i++) {
-                console.log('adding reqeusts to promise');
-                try {
-                    requests.push(deleteForAll(filteredConversations[index].id));
-                } catch (error) {
-                    console.log(`Error adding ${url}`, error.message);
-                }
-                index++;
-            }
-            try {
-                await Promise.all(requests);
-            } catch (error) {
-                console.log('There was an error', error.message, error.url);
-                return;
-            }
-            console.log('Processed requests');
-            await (function wait() {
-                return new Promise(resolve => {
-                    setTimeout(() => {
-                        resolve();
-                    }, 2000);
-                })
-            })();
-            requests = [];
-            loops--;
-        }
-        for (let i = 0; i < filteredConversations.length % 40; i++) {
-            console.log('adding reqeusts to promise');
-            try {
-                requests.push(deleteForAll(filteredConversations[index].id));
-            } catch (error) {
-                console.log(`error adding ${filteredConversations[index]} to array`);
-            }
-            index++;
-        }
-        try {
-            await Promise.all(requests);
-        } catch (error) {
-            console.log('There was an error', error.message, error.url);
-            return;
-        }
+        // while (loops > 0) {
+        //     console.log('Inside while');
+        //     for (let i = 0; i < 40; i++) {
+        //         console.log('adding reqeusts to promise');
+        //         try {
+        //             requests.push(deleteForAll(filteredConversations[index].id));
+        //         } catch (error) {
+        //             console.log(`Error adding ${url}`, error.message);
+        //         }
+        //         index++;
+        //     }
+        //     try {
+        //         await Promise.all(requests);
+        //     } catch (error) {
+        //         console.log('There was an error', error.message, error.url);
+        //         return;
+        //     }
+        //     console.log('Processed requests');
+        //     await (function wait() {
+        //         return new Promise(resolve => {
+        //             setTimeout(() => {
+        //                 resolve();
+        //             }, 2000);
+        //         })
+        //     })();
+        //     requests = [];
+        //     loops--;
+        // }
+        // for (let i = 0; i < filteredConversations.length % 40; i++) {
+        //     console.log('adding reqeusts to promise');
+        //     try {
+        //         requests.push(deleteForAll(filteredConversations[index].id));
+        //     } catch (error) {
+        //         console.log(`error adding ${filteredConversations[index]} to array`);
+        //     }
+        //     index++;
+        // }
+        // try {
+        //     await Promise.all(requests);
+        // } catch (error) {
+        //     console.log('There was an error', error.message, error.url);
+        //     return;
+        // }
+
+        if (filteredConversations.length > 0)
+            console.log(`Deleted: ${filteredConversations.length} conversations`);
         let more = await questionAsker.questionDetails('Do you have more?(y/n) ');
         if (more === 'y') {
             myFilter = await questionAsker.questionDetails('What filter do you want to use? ');
         } else
             break;
     }
-    if (filteredConversations.length > 0)
-        console.log(filteredConversations.length);
+
     questionAsker.close();
 }
 
@@ -123,7 +131,7 @@ async function bulkDelete(userID, messageFilter) {
 
     //await deleteForAll(1466);
 
-    await bulkDelete(10, 'Test')
+    await bulkDelete(26, null)
     console.log('Finsihed');
 
 })();

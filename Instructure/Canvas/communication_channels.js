@@ -16,7 +16,6 @@ async function removeFromSuppressionList(region, email) {
             url: `${region}${email}`
         });
         console.log(`Removed ${email} from supression list`, response.status);
-        return;
     } catch (error) {
         console.log(error.response.status, error.message);
     }
@@ -29,6 +28,7 @@ async function removeFromSuppressionList(region, email) {
     } catch (error) {
         console.log('ERROR: ', error.response.status, error.message);
     }
+    return
 }
 
 (async () => {

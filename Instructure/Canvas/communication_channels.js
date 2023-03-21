@@ -17,7 +17,11 @@ async function removeFromSuppressionList(region, email) {
         });
         console.log(`Removed ${email} from supression list`, response.status);
     } catch (error) {
-        console.log(error.response.status, error.message);
+        if (error.response.status === 404) {
+            console.log('Response status: ', error.response.status);
+            return;
+        } else
+            console.log('ERROR: ', error.response.status, error.message);
     }
     try {
         const response = await axios({

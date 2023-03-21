@@ -154,18 +154,10 @@ async function getRegion(url) {
         console.log('Unable to find region');
         return false;
     }
-    const metaHeaders = response.headers.get('x-canvas-meta').split(';');
-    const metaObject = metaHeaders
-        .filter((element) => {
-            const [key, value] = element.split('=');
-            if (key === 'z') {
-                return element;
-            }
-        })
-        .map(element => element.split('=')[1])
-        .map(element => element.split('-')[0]);
+    const region = response.headers.get('x-canvas-meta').match(/z=(\w+)/)[1];
+    console.log(region);
 
-    return getMyRegion(metaObject[0]);
+    return getMyRegion(region);
 }
 
 module.exports = {

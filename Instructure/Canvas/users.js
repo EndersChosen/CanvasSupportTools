@@ -1,7 +1,7 @@
 // users.js
 const config = require('./config.js');
 const pagination = require('../pagination.js');
-const random_user = require('./random_user');
+const random_user = require('../random_user');
 const error_check = require('../error_check');
 //const csvExporter = require('../csvExporter');
 
@@ -21,20 +21,24 @@ let userData = {
     enable_sis_reactivation: true
 };
 
-async function getUsers(url = 'courses/5988/users', params = {}) {
-    let users = [];
+async function getUsers(courseID, url = null, userList = []) {
+    let users = userList;
+    let myURL = url;
+    if (myURL === null) {
+        myURL = `/courses/${courseID}/users?per_page=100`;
+    }
+    console.log(myURL);
     try {
-        const response = await axios.get(url);
-        console.log(response.headers.get('x-rate-limit-remaining'));
-        console.log(response.headers.get('x-request-cost'));
+        const response = await axios.get(myURL);
+        users.push(...response.data);
         const nextPage = pagination.getNextPage(response.headers.get('link'));
-        if (nextPage != false) {
-            users = await getUsers(nextPage);
+        if (nextPage !== false) {
+            users = await getUsers(null, nextPage, users);
         }
     } catch (error) {
         if (error.response) {
             console.log(error.response.status);
-            console.log(error.response.headers);
+            console.log(error.response.request);
         } else if (error.request) {
             console.log(error.request);
         } else {
@@ -110,13 +114,16 @@ function updateUserParams(person) {
     return;
 }
 
-// (async () => {
-//     let myPageViews = await getPageViews(26, null,
-//         '2023-02-15T07:00:00.000', '2023-02-16T07:00:00.000');
-//     console.log(`${myPageViews.length} Page views`);
-//     csvExporter.exportToCSV(myPageViews);
-//     //console.log(myPageViews.length);
-// })();
+(async () => {
+    // let myUsers = await getUsers(2155);
+    // console.log(myUsers.length);
+
+    // let myPageViews = await getPageViews(26, null,
+    //     '2023-02-15T07:00:00.000', '2023-02-16T07:00:00.000');
+    // console.log(`${myPageViews.length} Page views`);
+    // csvExporter.exportToCSV(myPageViews);
+    //console.log(myPageViews.length);
+})();
 
 module.exports = {
     getUsers, createUser, getPageViews

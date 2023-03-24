@@ -38,6 +38,7 @@ Modules:
     Re-lock moodules
     DONE - Delete empty modules
     DONE - Delete all modules
+    Check module progression
 
 Sections:
     DONE - Create Sections
@@ -87,6 +88,9 @@ UI:
     DONE - add masquerade link on the courses/id/users page
     Paginate assignments page
     DONE - show admin role on users page
+    Button to reprocess docViewer files
+    Update the aweful rubric selector
+    Add ability to add admin from users page
 
 Sub-Accounts
     create new Sub-Accounts
@@ -98,10 +102,6 @@ Catalog
 ----------------
 DONE - list orders
 register users
-
-Canvas UI
------------
-do something about the aweful rubric selector
 
 Tools utilities
 --------------

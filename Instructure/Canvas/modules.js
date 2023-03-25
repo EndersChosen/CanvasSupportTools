@@ -3,6 +3,8 @@ const config = require('./config');
 const pagination = require('../pagination');
 const errorCheck = require('../error_check');
 const { createRequester, deleteRequester } = require('../utilities');
+const { getUsers } = require('./users.js');
+const { exportToCSV } = require('../csvExporter');
 
 const axios = config.instance;
 
@@ -69,6 +71,50 @@ async function deleteEmptyModules(courseID) {
     console.log('Finished');
 }
 
+async function getUserProgress(CourseId) {
+    console.log('Getting list of incomplete users');
+    let userList = await getUsers(CourseId);
+    let studentList = userList.filter((user) => {
+        if (user.enrollments.length > 1) {
+            for (let enrollment of user.enrollments) {
+                if (enrollment.type === 'StudentEnrollment')
+                    return user;
+            }
+        } else {
+            if (user.enrollments[0].type === 'StudentEnrollment') {
+                return user;
+            }
+        }
+    });
+    console.log(studentList.length);
+    let incompleteUsers = [];
+    for (let user of userList) {
+        console.log('Checking user...');
+        try {
+            const response = await axios({
+                method: 'GET',
+                url: `/courses/${CourseId}/users/${user.id}/progress`
+            });
+            if (response.data.completed_at === null) {
+                console.log('Adding user', user.id);
+                incompleteUsers.push(user);
+            }
+        } catch (error) {
+            if (error.response.status === 443)
+                continue;
+        }
+    }
+    let usefulCSV = incompleteUsers.map((user) => {
+        const { id, name } = user;
+        return { id: id, name: name };
+    });
+
+    console.log(usefulCSV[0], incompleteUsers[0]);
+    exportToCSV(usefulCSV, 'incomplete_users');
+
+    return incompleteUsers;
+}
+
 (async () => {
     // let newModules = await createModule(6006, 34);
     // console.log(newModules);
@@ -79,6 +125,9 @@ async function deleteEmptyModules(courseID) {
     // await deleteAllModules(6006);
     // console.log('Completed');
 
-    await deleteEmptyModules(6006);
-    console.log('Completed');
+    // await deleteEmptyModules(6006);
+    // console.log('Completed');
+
+    let myUsers = await getUserProgress(426);
+    console.log(myUsers.length);
 })();

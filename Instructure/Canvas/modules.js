@@ -95,6 +95,7 @@ async function getUserProgress(CourseId) {
                 method: 'GET',
                 url: `/courses/${CourseId}/users/${user.id}/progress`
             });
+            console.log(response.data);
             if (response.data.completed_at === null) {
                 console.log('Adding user', user.id);
                 incompleteUsers.push(user);
@@ -109,7 +110,6 @@ async function getUserProgress(CourseId) {
         return { id: id, name: name };
     });
 
-    console.log(usefulCSV[0], incompleteUsers[0]);
     exportToCSV(usefulCSV, 'incomplete_users');
 
     return incompleteUsers;
@@ -128,6 +128,6 @@ async function getUserProgress(CourseId) {
     // await deleteEmptyModules(6006);
     // console.log('Completed');
 
-    let myUsers = await getUserProgress(426);
+    let myUsers = await getUserProgress(2155);
     console.log(myUsers.length);
 })();

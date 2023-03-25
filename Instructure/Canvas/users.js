@@ -25,7 +25,7 @@ async function getUsers(courseID, url = null, userList = []) {
     let users = userList;
     let myURL = url;
     if (myURL === null) {
-        myURL = `/courses/${courseID}/users?per_page=100`;
+        myURL = `/courses/${courseID}/users?per_page=100&include[]=enrollments`;
     }
     console.log(myURL);
     try {

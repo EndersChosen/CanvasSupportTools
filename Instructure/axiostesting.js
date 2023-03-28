@@ -1,4 +1,6 @@
-const axios = require('axios');
+const config = require('./Canvas/config');
+
+const axios = config.instance;
 
 const data = {
     assignment: {

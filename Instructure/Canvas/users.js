@@ -130,20 +130,20 @@ async function clearCourseUserCache(courseID) {
     return;
 }
 
-(async () => {
-    // let myUsers = await getUsers(2155);
-    // console.log(myUsers.length);
+// (async () => {
+//     // let myUsers = await getUsers(2155);
+//     // console.log(myUsers.length);
 
-    // let myPageViews = await getPageViews(26, null,
-    //     '2023-02-15T07:00:00.000', '2023-02-16T07:00:00.000');
-    // console.log(`${myPageViews.length} Page views`);
-    // csvExporter.exportToCSV(myPageViews);
-    // console.log(myPageViews.length);
+//     // let myPageViews = await getPageViews(26, null,
+//     //     '2023-02-15T07:00:00.000', '2023-02-16T07:00:00.000');
+//     // console.log(`${myPageViews.length} Page views`);
+//     // csvExporter.exportToCSV(myPageViews);
+//     // console.log(myPageViews.length);
 
-    await clearCourseUserCache(2155);
-    console.log('done');
-})();
+//     // await clearCourseUserCache(2155);
+//     // console.log('done');
+// })();
 
-// module.exports = {
-//     getUsers, createUser, getPageViews
-// };
+module.exports = {
+    getUsers, createUser, getPageViews
+};

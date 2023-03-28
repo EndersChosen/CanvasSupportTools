@@ -114,6 +114,22 @@ function updateUserParams(person) {
     return;
 }
 
+async function clearUserCache(userID) {
+    console.log('Clearing user cache for ', userID);
+
+    await axios.post(`/users/${userID}/clear_cache`);
+}
+
+async function clearCourseUserCache(courseID) {
+    console.log('Clearing cache of every user in the course', courseID);
+
+    let userList = await getUsers(courseID);
+    for (let user of userList)
+        await clearUserCache(user.id);
+
+    return;
+}
+
 (async () => {
     // let myUsers = await getUsers(2155);
     // console.log(myUsers.length);
@@ -122,9 +138,12 @@ function updateUserParams(person) {
     //     '2023-02-15T07:00:00.000', '2023-02-16T07:00:00.000');
     // console.log(`${myPageViews.length} Page views`);
     // csvExporter.exportToCSV(myPageViews);
-    //console.log(myPageViews.length);
+    // console.log(myPageViews.length);
+
+    await clearCourseUserCache(2155);
+    console.log('done');
 })();
 
-module.exports = {
-    getUsers, createUser, getPageViews
-};
+// module.exports = {
+//     getUsers, createUser, getPageViews
+// };

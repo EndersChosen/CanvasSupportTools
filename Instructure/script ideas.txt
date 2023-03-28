@@ -91,6 +91,7 @@ UI:
     Button to reprocess docViewer files
     Update the aweful rubric selector
     Add ability to add admin from users page
+    Shows/Reset bounce count from users page
 
 Sub-Accounts
     create new Sub-Accounts

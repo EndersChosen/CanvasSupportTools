@@ -58,17 +58,17 @@ function updateEnrollParams(userID, role) {
 }
 
 // asking the important questions
-// (async () => {
-//     let numToEnroll = await questionAsker.questionDetails('How many users do you want to enroll?')
-//     let theCourse = await questionAsker.questionDetails('What Course?')
+(async () => {
+    let numToEnroll = await questionAsker.questionDetails('How many users do you want to enroll?')
+    let theCourse = await questionAsker.questionDetails('What Course?')
 
-//     for (let i = 0; i < numToEnroll; i++) {
-//         await enrollUser(theCourse);
-//     }
-//     console.log(`Finished enrolling ${numToEnroll} user(s)`);
-//     questionAsker.close();
-// })();
+    for (let i = 0; i < numToEnroll; i++) {
+        await enrollUser(theCourse);
+    }
+    console.log(`Finished enrolling ${numToEnroll} user(s)`);
+    questionAsker.close();
+})();
 
-module.exports = {
-    enrollUser
-};
+// module.exports = {
+//     enrollUser
+// };

@@ -3,6 +3,7 @@ const config = require('./config.js');
 const pagination = require('../pagination.js');
 const random_user = require('../random_user');
 const error_check = require('../error_check');
+const questionAsker = require('../questionAsker');
 //const csvExporter = require('../csvExporter');
 
 const axios = config.instance;
@@ -50,12 +51,13 @@ async function getUsers(courseID, url = null, userList = []) {
 
 async function createUser() {
     console.log('Creating new user...');
+    console.log(axios.defaults.baseURL);
     let url = 'accounts/self/users';
     let newPerson = await error_check.errorCheck(random_user.getRandomPerson);
     updateUserParams(newPerson);
     let startTime = performance.now();
     const response = await error_check.errorCheck(async () => {
-        return await axios.post(url, userData)
+        return await axios.post(`https://${axios.defaults.baseURL}/api/v1/${url}`, userData)
     });
     let endTime = performance.now();
     console.log(`Created a user in ${Math.floor(endTime - startTime) / 1000} seconds`);
@@ -130,20 +132,28 @@ async function clearCourseUserCache(courseID) {
     return;
 }
 
-// (async () => {
-//     // let myUsers = await getUsers(2155);
-//     // console.log(myUsers.length);
+(async () => {
+    axios.defaults.baseURL = await questionAsker.questionDetails('What domain: ');
+    const numUsers = await questionAsker.questionDetails('How many users ');
+    questionAsker.close();
 
-//     // let myPageViews = await getPageViews(26, null,
-//     //     '2023-02-15T07:00:00.000', '2023-02-16T07:00:00.000');
-//     // console.log(`${myPageViews.length} Page views`);
-//     // csvExporter.exportToCSV(myPageViews);
-//     // console.log(myPageViews.length);
+    for (let i = 0; i < numUsers; i++) {
+        let user = await createUser();
+        console.log(user.id);
+    }
+    // let myUsers = await getUsers(2155);
+    // console.log(myUsers.length);
 
-//     // await clearCourseUserCache(2155);
-//     // console.log('done');
-// })();
+    // let myPageViews = await getPageViews(26, null,
+    //     '2023-02-15T07:00:00.000', '2023-02-16T07:00:00.000');
+    // console.log(`${myPageViews.length} Page views`);
+    // csvExporter.exportToCSV(myPageViews);
+    // console.log(myPageViews.length);
 
-module.exports = {
-    getUsers, createUser, getPageViews
-};
+    // await clearCourseUserCache(2155);
+    // console.log('done');
+})();
+
+// module.exports = {
+//     getUsers, createUser, getPageViews
+// };

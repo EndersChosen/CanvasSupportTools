@@ -19,18 +19,18 @@ async function removeFromSuppressionList(region, email) {
     } catch (error) {
         if (error.response.status === 404) {
             console.log('Response status: ', error.response.status);
-            return;
+
         } else
             console.log('ERROR: ', error.response.status, error.message);
     }
     try {
-        const response = await axios({
+        await axios({
             method: 'POST',
-            url: `/accounts/self/bounced_communication_channels/reset?pattern=${email}`
+            url: `https://${axios.defaults.baseURL}/api/v1/accounts/self/bounced_communication_channels/reset?pattern=${email}`
         });
         console.log('reset bounce count');
     } catch (error) {
-        console.log('ERROR: ', error.response.status, error.message);
+        console.log('ERROR: ', error.response, error.message);
     }
     return
 }

@@ -157,9 +157,11 @@ async function bulkDelete(userID, messageFilter) {
 
     //await deleteForAll(1466);
 
+    let curDomain = await questionAsker.questionDetails('What Domain: ');
     let user = await questionAsker.questionDetails('What user: ');
     let filter = await questionAsker.questionDetails('What subject: ');
 
+    axios.defaults.baseURL = `https://${curDomain}/api/v1`;
     await bulkDelete(user, filter)
     console.log('finished');
     questionAsker.close();

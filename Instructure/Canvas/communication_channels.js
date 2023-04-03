@@ -10,18 +10,20 @@ async function getCommunicationChannels() {
 }
 
 async function removeFromSuppressionList(region, email) {
+    let crrntURL = `${region}${email}`;
     try {
         const response = await axios({
             method: 'DELETE',
-            url: `${region}${email}`
+            url: crrntURL
         });
         console.log(`Removed ${email} from supression list`, response.status);
     } catch (error) {
         if (error.response.status === 404) {
             console.log('Response status: ', error.response.status);
-
-        } else
-            console.log('ERROR: ', error.response.status, error.message);
+        } else {
+            console.log('ERROR: remove from suppression failed, skipping bounce count reset', error.response.status, error.message);
+            return;
+        }
     }
     try {
         await axios({
@@ -36,11 +38,12 @@ async function removeFromSuppressionList(region, email) {
 }
 
 (async () => {
-    axios.defaults.baseURL = await questionAsker.questionDetails('What domain: ');
+    let curDomain = await questionAsker.questionDetails('What domain: ');
     const email = await questionAsker.questionDetails('What email: ');
     questionAsker.close();
 
-    const region = await getRegion(axios.defaults.baseURL);
+    axios.defaults.baseURL = `https://${curDomain}/api/v1`;
+    const region = await getRegion();
     if (region)
         removeFromSuppressionList(region, email)
     else

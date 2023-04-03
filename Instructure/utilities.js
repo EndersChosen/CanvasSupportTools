@@ -144,10 +144,10 @@ function holdPlease(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
-async function getRegion(url) {
+async function getRegion() {
     const response = await axios({
         method: "GET",
-        url: `https://${url}/api/v1/accounts/self`
+        url: `/accounts/self`
     });
     if (!response.headers.get('x-canvas-meta')) {
         console.log(response.headers);

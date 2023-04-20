@@ -82,7 +82,7 @@ async function bulkDelete(userID, messageFilter) {
             } else
                 break;
         }
-        csvExporter.exportToCSV(filteredConversations, 'deletedConverstations');
+        csvExporter.exportToCSV(filteredConversations, `${myFilter}`);
 
         // let loops = Math.floor(filteredConversations.length / 40);
         // let requests = [];

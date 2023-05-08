@@ -109,7 +109,7 @@ async function getUserProgress(CourseId) {
         return { id: id, name: name };
     });
 
-    exportToCSV(usefulCSV, 'incomplete_users_400');
+    exportToCSV(usefulCSV, `incomplete_users_${CourseId}`);
 
     return incompleteUsers;
 }
@@ -127,6 +127,6 @@ async function getUserProgress(CourseId) {
     // await deleteEmptyModules(6006);
     // console.log('Completed');
 
-    let myUsers = await getUserProgress(400);
+    let myUsers = await getUserProgress(433);
     console.log(myUsers.length);
 })();

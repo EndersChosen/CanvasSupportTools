@@ -8,8 +8,8 @@
 // -------------------------------------
 
 const config = require('./config.js');
-const pagination = require('./pagination.js');
-const questionAsker = require('./questionAsker');
+const pagination = require('../pagination.js');
+const questionAsker = require('../questionAsker');
 
 
 const axios = config.instance;
@@ -40,27 +40,31 @@ async function createAssignmentGroups(course, params = {}, number) {
     console.log(`Created ${counter} assignment group(s) in ${Math.floor(endTime - startTime) / 1000} seconds.`);
 }
 
-async function getAssignmentGroups(course, params = {}) {
-    let url = `courses/${course}/assignment_groups/`;
-    try {
-        const response = await axios.get(url, { params });
-        const nextPage = pagination.getNextPage(response.headers.get('link'));
-        if (nextPage != false) {
-            await getAssignmentGroups(nextPage);
-        }
+async function getAssignmentGroups(course) {
+    let url = `https://mc3.instructure.com/api/v1/courses/5909/assignment_groups?include[]=assignments&per_page=100`;
+    let assignmentGroups = [];
+    let nextPage = url;
 
-        for (let group of response.data) {
-            assignmentGroups.push(group);
-        }
+    console.log(nextPage);
+    while (nextPage) {
+        try {
+            const response = await axios.get(nextPage);
+            nextPage = pagination.getNextPage(response.headers.get('link'));
+            console.log(nextPage);
 
-    } catch (error) {
-        if (error.response) {
-            console.log(error.response.status);
-            console.log(error.response.headers);
-        } else if (error.request) {
-            console.log(error.request);
-        } else {
-            console.log('A different error', error.message);
+            for (let group of response.data) {
+                assignmentGroups.push(group);
+            }
+
+        } catch (error) {
+            if (error.response) {
+                console.log(error.response.status);
+                console.log(error.response.headers);
+            } else if (error.request) {
+                console.log(error.request);
+            } else {
+                console.log('A different error', error.message);
+            }
         }
     }
 
@@ -68,17 +72,18 @@ async function getAssignmentGroups(course, params = {}) {
 }
 
 async function deleteEmptyAssignmentGroups(course) {
-    let url = `courses/${course}/assignment_groups/`;
-    let params = {
-        include: ['assignments']
-    };
+    let url = `https://mc3.instructure.com/api/v1/courses/5909/assignment_groups/`;
+    // let params = {
+    //     include: ['assignments']
+    // };
 
     console.log('getting empty assignment groups');
-    const theAssignmentGroups = await getAssignmentGroups(course, params);
+    const theAssignmentGroups = await getAssignmentGroups(course);
 
 
     const emptyAssignmentGroups = theAssignmentGroups.filter(assignmentGroup => {
-        return assignmentGroup.assignments.length === 0;
+        if (assignmentGroup.assignments.length < 1)
+            return assignmentGroup;
     });
 
     console.log('Number of assignment groups to delete', emptyAssignmentGroups.length);
@@ -105,15 +110,15 @@ async function deleteEmptyAssignmentGroups(course) {
     }
 }
 
-// (async () => {
-//     let theCourse = await qa('What course:');
-//     // await createAssignmentGroups(`courses/${theCourse}/assignment_groups`, {}, 10);
-//     // let myAssignmentGroups = await getAssignmentGroups(`courses/${theCourse}/assignment_groups`);
-//     // console.log(myAssignmentGroups.length);
-//     await deleteEmptyAssignmentGroups(theCourse);
+(async () => {
+    //let theCourse = await qa('What course:');
+    // await createAssignmentGroups(`courses/${theCourse}/assignment_groups`, {}, 10);
+    //let myAssignmentGroups = await getAssignmentGroups(`courses/${theCourse}/assignment_groups`);
+    // console.log(myAssignmentGroups.length);
+    await deleteEmptyAssignmentGroups(null);
 
-// })();
+})();
 
-module.exports = {
-    createAssignmentGroups, getAssignmentGroups, deleteEmptyAssignmentGroups
-}
+// module.exports = {
+//     createAssignmentGroups, getAssignmentGroups, deleteEmptyAssignmentGroups
+// }

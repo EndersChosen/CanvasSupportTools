@@ -191,7 +191,6 @@ async function deleteAllAssignments(courseID, assignments) {
     // });
     // console.log(filteredAssignments.length);
 
-    const apiToken = `17~wx9fPrx6jkx03R0dmcMy6ahhVS5STzE0a8reRwosbMcNPohGjgpB83eQgW5Cj1DM`;
     const assignments = [];
     let query = `query myQuery($courseId: ID,$nextPage: String)  {
                 course(id: $courseId) {

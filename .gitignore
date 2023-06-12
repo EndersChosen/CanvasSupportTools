@@ -108,3 +108,5 @@ dist
 
 # csv data files
 *.csv
+Instructure/Canvas/graphql_test.js
+Instructure/Canvas/delete_assignments_modules.js

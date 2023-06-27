@@ -5,6 +5,7 @@ const errorCheck = require('../error_check');
 const { createRequester, deleteRequester } = require('../utilities');
 const { getUsers } = require('./users.js');
 const { exportToCSV } = require('../csvExporter');
+const questionAsker = require('../questionAsker');
 
 const axios = config.instance;
 
@@ -115,6 +116,15 @@ async function getUserProgress(CourseId) {
 }
 
 (async () => {
+    let curDomain = await questionAsker.questionDetails('What Domain: ');
+    let course = await questionAsker.questionDetails('What course: ');
+
+
+    axios.defaults.baseURL = `https://${curDomain}/api/v1`;
+    let myUsers = await getUserProgress(course);
+    console.log('finished');
+    console.log(myUsers.length);
+    questionAsker.close();
     // let newModules = await createModule(6006, 34);
     // console.log(newModules);
 
@@ -126,7 +136,4 @@ async function getUserProgress(CourseId) {
 
     // await deleteEmptyModules(6006);
     // console.log('Completed');
-
-    let myUsers = await getUserProgress(433);
-    console.log(myUsers.length);
 })();

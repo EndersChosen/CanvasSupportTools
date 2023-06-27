@@ -170,112 +170,129 @@ async function deleteAllAssignments(courseID, assignments) {
 
 
 // the function that does the stuff
-(async () => {
-    // let curDomain = await questionAsker.questionDetails('What domain: ');
-    // const courseID = await questionAsker.questionDetails('What course: ');
-    // questionAsker.close();
+// (async () => {
+//     const curDomain = await questionAsker.questionDetails('What domain: ');
+//     const courseID = await questionAsker.questionDetails('What course: ');
+//     const number = await questionAsker.questionDetails('How many assignments do you want to create: ');
+//     questionAsker.close();
 
-    // axios.defaults.baseURL = `https://${curDomain}/api/v1`;
-    // // const region = await getRegion();
-    // // if (region)
-    // //     removeFromSuppressionList(region, email)
-    // // else
-    // //     console.log('error with region');
-    // // await deleteNoSubmissionAssignments(2165);
-    // const assignments = await getAssignments(courseID);
-    // console.log(assignments.length);
-    // const filteredAssignments = assignments.filter((assignment) => {
-    //     if (assignment.name.match(/2013|2014|2015|2016|2017|2018|2019|2020|Fall|Spring|Contract|Shoplifting/)) {
-    //         return assignment;
-    //     }
-    // });
-    // console.log(filteredAssignments.length);
+//     axios.defaults.baseURL = `https://${curDomain}/api/v1`;
 
-    const assignments = [];
-    let query = `query myQuery($courseId: ID,$nextPage: String)  {
-                course(id: $courseId) {
-                        assignmentsConnection(
-                            first:500,
-                            after: $nextPage
-                        ){
-                            edges {
-        node {
-          name
-          _id
-          modules {
-            name
-          }
-          quiz {
-            modules {
-              name
-            }
-          }
-          discussion {
-            modules {
-              name
-            }
-          }
-        }
-      },
-                            pageInfo{
-                                endCursor,
-                                hasNextPage
-                            }
-                        }
-                    }
-                }`;
-    let variables = { courseId: "5909", nextPage: "" };
+//     await createAssignments(courseID, number);
+//     // // // const region = await getRegion();
+//     // // // if (region)
+//     // // //     removeFromSuppressionList(region, email)
+//     // // // else
+//     // // //     console.log('error with region');
+//     // // // await deleteNoSubmissionAssignments(2165);
+//     // // const assignments = await getAssignments(courseID);
+//     // // console.log(assignments.length);
+//     // // const filteredAssignments = assignments.filter((assignment) => {
+//     // //     if (assignment.name.match(/2013|2014|2015|2016|2017|2018|2019|2020|Fall|Spring|Contract|Shoplifting/)) {
+//     // //         return assignment;
+//     // //     }
+//     // // });
+//     // // console.log(filteredAssignments.length);
 
-    let next_page = true;
-    let startTime = performance.now();
-    while (next_page) {
-        const response = await fetch('https://mc3.instructure.com/api/graphql', {
-            method: "POST",
-            headers: {
-                "Authorization": `Bearer ${apiToken}`,
-                "Content-type": "application/json",
-                "Accept": "application/json"
-            },
-            body: JSON.stringify({
-                query,
-                variables: variables
-            })
-        });
+//     // // ***************************************************
+//     // //
+//     // // DELETE ALL ASSIGNMENTS NOT IN MODULES
+//     // //
+//     // // ***************************************************
 
-        const data = await response.json();
-        for (let assignment of data.data.course.assignmentsConnection.edges) {
-            assignments.push(assignment.node);
-        }
-        if (data.data.course.assignmentsConnection.pageInfo.hasNextPage) {
-            variables.nextPage = data.data.course.assignmentsConnection.pageInfo.endCursor
-        } else {
-            next_page = false;
-        }
-    }
-    let endTime = performance.now();
-    console.log(`Total query time ${Math.floor(endTime - startTime) / 1000} seconds`);
-    console.log(assignments.length);
-    const filteredAssignments = assignments.filter((assignment) => {
-        if (assignment.quiz) {
-            if (assignment.quiz.modules.length < 1)
-                return assignment;
-        } else if (assignment.discussion) {
-            if (assignment.discussion.modules.length < 1)
-                return assignment;
-        } else if (assignment.modules.length < 1) {
-            //console.log(assignment);
-            return assignment;
-        }
-    });
-    console.log(filteredAssignments.length);
-    //console.log(filteredAssignments);
-    // for (let assignment of filteredAssignments) {
-    //     console.log(assignment._id);
-    // }
-    await deleteAllAssignments(null, filteredAssignments)
-    console.log('Done');
-})();
 
-// module.exports = {
-//     createAssignments, getAssignments, deleteNoSubmissionAssignments, deleteAllAssignments
-// }
+//     // // const assignments = [];
+//     // // let query = `query myQuery($courseId: ID,$nextPage: String)  {
+//     // //             course(id: $courseId) {
+//     // //                     assignmentsConnection(
+//     // //                         first:500,
+//     // //                         after: $nextPage
+//     // //                     ){
+//     // //                         edges {
+//     // //     node {
+//     // //       name
+//     // //       _id
+//     // //       modules {
+//     // //         name
+//     // //       }
+//     // //       quiz {
+//     // //         modules {
+//     // //           name
+//     // //         }
+//     // //       }
+//     // //       discussion {
+//     // //         modules {
+//     // //           name
+//     // //         }
+//     // //       }
+//     // //     }
+//     // //   },
+//     // //                         pageInfo{
+//     // //                             endCursor,
+//     // //                             hasNextPage
+//     // //                         }
+//     // //                     }
+//     // //                 }
+//     // //             }`;
+//     // // let variables = { courseId: "5909", nextPage: "" };
+
+//     // // let next_page = true;
+//     // // let startTime = performance.now();
+//     // // while (next_page) {
+//     // //     const response = await fetch('https://mc3.instructure.com/api/graphql', {
+//     // //         method: "POST",
+//     // //         headers: {
+//     // //             "Authorization": `Bearer ${apiToken}`,
+//     // //             "Content-type": "application/json",
+//     // //             "Accept": "application/json"
+//     // //         },
+//     // //         body: JSON.stringify({
+//     // //             query,
+//     // //             variables: variables
+//     // //         })
+//     // //     });
+
+//     // //     const data = await response.json();
+//     // //     for (let assignment of data.data.course.assignmentsConnection.edges) {
+//     // //         assignments.push(assignment.node);
+//     // //     }
+//     // //     if (data.data.course.assignmentsConnection.pageInfo.hasNextPage) {
+//     // //         variables.nextPage = data.data.course.assignmentsConnection.pageInfo.endCursor
+//     // //     } else {
+//     // //         next_page = false;
+//     // //     }
+//     // // }
+//     // // let endTime = performance.now();
+//     // // console.log(`Total query time ${Math.floor(endTime - startTime) / 1000} seconds`);
+//     // // console.log(assignments.length);
+//     // // const filteredAssignments = assignments.filter((assignment) => {
+//     // //     if (assignment.quiz) {
+//     // //         if (assignment.quiz.modules.length < 1)
+//     // //             return assignment;
+//     // //     } else if (assignment.discussion) {
+//     // //         if (assignment.discussion.modules.length < 1)
+//     // //             return assignment;
+//     // //     } else if (assignment.modules.length < 1) {
+//     // //         //console.log(assignment);
+//     // //         return assignment;
+//     // //     }
+//     // // });
+//     // // console.log(filteredAssignments.length);
+//     // // //console.log(filteredAssignments);
+//     // // // for (let assignment of filteredAssignments) {
+//     // // //     console.log(assignment._id);
+//     // // // }
+//     // // await deleteAllAssignments(null, filteredAssignments)
+
+
+//     // // *****************************************************
+//     // // 
+//     // // END OF DELETE ALL ASSIGNMENTS NOT IN MODULES
+//     // // 
+//     // // *****************************************************
+//     console.log('Done');
+// })();
+
+module.exports = {
+    createAssignments, getAssignments, deleteNoSubmissionAssignments, deleteAllAssignments
+}

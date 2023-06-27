@@ -18,27 +18,33 @@ const enrollData = {
 // specified role. if no user id is passed in then 
 // create a new user first and then enroll them 
 // with the specified role (default 'StudentEnrollment')
-async function enrollUser(course, user = null, role = 'StudentEnrollment') {
+async function enrollUser(course, number, user = null, role = 'StudentEnrollment') {
     let url = `courses/${course}/enrollments`;
     let myRole = role;
+    const enrollments = [];
 
 
     // checking if a specific user was passed in
     // if not create a new user and enroll them as the 
     // specified role
     if (user === null) {
-        const newUser = await error_check.errorCheck(users.createUser);
-        updateEnrollParams(newUser.id, myRole);
-        console.log(enrollData);
+        for (let i = 0; i < number; i++) {
+            const newUser = await error_check.errorCheck(users.createUser);
+            updateEnrollParams(newUser.id, myRole);
+            //console.log(enrollData);
 
-        console.log(`Enrolling a new user as ${role}...`);
-        const newEnroll = await error_check.errorCheck(async () => {
-            return await axios.post(url, enrollData)
-        });
-        if (newEnroll === undefined) {
-            return 'There was an error';
+            console.log(`Enrolling a new user as ${role}...`);
+            const newEnroll = await error_check.errorCheck(async () => {
+                return await axios.post(url, enrollData)
+            });
+            if (newEnroll === undefined) {
+                return 'There was an error';
+            } else {
+                enrollments.push(newEnroll.data);
+            }
         }
-        return newEnroll.data;
+
+        return enrollments;
     } else { // enrolling the specified user
         console.log(`Enrolling an existing user as ${role}...`);
         let url = `courses/${course}/enrollments`
@@ -59,14 +65,18 @@ function updateEnrollParams(userID, role) {
 
 // asking the important questions
 (async () => {
-    let numToEnroll = await questionAsker.questionDetails('How many users do you want to enroll?')
-    let theCourse = await questionAsker.questionDetails('What Course?')
-
-    for (let i = 0; i < numToEnroll; i++) {
-        await enrollUser(theCourse);
-    }
-    console.log(`Finished enrolling ${numToEnroll} user(s)`);
+    const curDomain = await questionAsker.questionDetails('What domain: ');
+    const courseID = await questionAsker.questionDetails('What course: ');
+    const number = await questionAsker.questionDetails('How many users do you want to enroll: ');
+    // const type = await questionAsker.questionDetails('What type of user do you want to enroll (Teacher/Ta/Student): ');
     questionAsker.close();
+
+    axios.defaults.baseURL = `https://${curDomain}/api/v1`;
+
+    const enrolled = await enrollUser(courseID, number);
+    console.log('enrolled ', enrolled.length);
+
+    console.log('Done');
 })();
 
 // module.exports = {

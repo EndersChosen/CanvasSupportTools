@@ -52,12 +52,14 @@ async function getUsers(courseID, url = null, userList = []) {
 async function createUser() {
     console.log('Creating new user...');
     console.log(axios.defaults.baseURL);
+
     let url = 'accounts/self/users';
     let newPerson = await error_check.errorCheck(random_user.getRandomPerson);
     updateUserParams(newPerson);
+
     let startTime = performance.now();
     const response = await error_check.errorCheck(async () => {
-        return await axios.post(`https://${axios.defaults.baseURL}/api/v1/${url}`, userData)
+        return await axios.post(url, userData)
     });
     let endTime = performance.now();
     console.log(`Created a user in ${Math.floor(endTime - startTime) / 1000} seconds`);
@@ -133,14 +135,18 @@ async function clearCourseUserCache(courseID) {
 }
 
 (async () => {
-    axios.defaults.baseURL = await questionAsker.questionDetails('What domain: ');
-    const numUsers = await questionAsker.questionDetails('How many users ');
-    questionAsker.close();
+    // const curDomain = await questionAsker.questionDetails('What domain: ');
+    // const courseID = await questionAsker.questionDetails('What course: ');
+    // const number = await questionAsker.questionDetails('How many users do you want to create: ');
+    // questionAsker.close();
 
-    for (let i = 0; i < numUsers; i++) {
-        let user = await createUser();
-        console.log(user.id);
-    }
+    // axios.defaults.baseURL = `https://${curDomain}/api/v1`;
+
+
+    // for (let i = 0; i < numUsers; i++) {
+    //     let user = await createUser();
+    //     console.log(user.id);
+    // }
     // let myUsers = await getUsers(2155);
     // console.log(myUsers.length);
 
@@ -151,9 +157,9 @@ async function clearCourseUserCache(courseID) {
     // console.log(myPageViews.length);
 
     // await clearCourseUserCache(2155);
-    // console.log('done');
+    //console.log('done');
 })();
 
-// module.exports = {
-//     getUsers, createUser, getPageViews
-// };
+module.exports = {
+    getUsers, createUser, getPageViews
+};

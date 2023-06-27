@@ -41,7 +41,7 @@ async function createAssignmentGroups(course, params = {}, number) {
 }
 
 async function getAssignmentGroups(course) {
-    let url = `https://mc3.instructure.com/api/v1/courses/5909/assignment_groups?include[]=assignments&per_page=100`;
+    let url = `/courses/${course}/assignment_groups?include[]=assignments&per_page=100`;
     let assignmentGroups = [];
     let nextPage = url;
 
@@ -72,7 +72,7 @@ async function getAssignmentGroups(course) {
 }
 
 async function deleteEmptyAssignmentGroups(course) {
-    let url = `https://mc3.instructure.com/api/v1/courses/5909/assignment_groups/`;
+    let url = `/courses/${course}/assignment_groups/`;
     // let params = {
     //     include: ['assignments']
     // };
@@ -111,12 +111,20 @@ async function deleteEmptyAssignmentGroups(course) {
 }
 
 (async () => {
-    //let theCourse = await qa('What course:');
-    // await createAssignmentGroups(`courses/${theCourse}/assignment_groups`, {}, 10);
-    //let myAssignmentGroups = await getAssignmentGroups(`courses/${theCourse}/assignment_groups`);
-    // console.log(myAssignmentGroups.length);
-    await deleteEmptyAssignmentGroups(null);
+    const curDomain = await questionAsker.questionDetails('What domain: ');
+    const courseID = await questionAsker.questionDetails('What course: ');
+    //const number = await questionAsker.questionDetails('How many assignments do you want to create: ');
+    questionAsker.close();
 
+    axios.defaults.baseURL = `https://${curDomain}/api/v1`;
+
+    // await createAssignmentGroups(`courses/${theCourse}/assignment_groups`, {}, 10);
+    // let myAssignmentGroups = await getAssignmentGroups(`courses/${theCourse}/assignment_groups`);
+    // console.log(myAssignmentGroups.length);
+
+    await deleteEmptyAssignmentGroups(courseID);
+
+    console.log('Done.');
 })();
 
 // module.exports = {

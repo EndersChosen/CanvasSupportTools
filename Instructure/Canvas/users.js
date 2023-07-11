@@ -4,7 +4,7 @@ const pagination = require('../pagination.js');
 const random_user = require('../random_user');
 const error_check = require('../error_check');
 const questionAsker = require('../questionAsker');
-//const csvExporter = require('../csvExporter');
+const csvExporter = require('../csvExporter');
 
 const axios = config.instance;
 
@@ -66,45 +66,40 @@ async function createUser() {
     return response.data;
 }
 
-async function getPageViews(user_id, url = null, startDate = null, endDate = null, pageNum = 1, dupPage = []) {
+async function getPageViews(user_id, startDate = null, endDate = null, pageNum = 1, dupPage = []) {
     let pageViews = [];
-    let myUrl = url;
-    let nextPage;
-    const perPage = 100;
+    // let myUrl = url;
+    let nextPage = `/users/${user_id}/page_views?start_time=${startDate}&end_time=${endDate}&per_page=100`;
+    console.log(nextPage);
 
-    console.log(`Getting page ${pageNum}`);
-    if (url === null) {
-        myUrl = `https://ckruger.instructure.com/api/v1/users/${user_id}/page_views`;
-    }
 
-    const response = await error_check.errorCheck(async () => {
-        return await axios.get(myUrl, {
-            params: {
-                start_time: startDate,
-                end_time: endDate,
-                per_page: perPage
-            }
-        });
-    });
-    if (response.data.length < perPage) {
-        nextPage = false;
-    } else {
+    while (nextPage) {
+        console.log(`Getting page ${pageNum}`);
+        // const response = await error_check.errorCheck(async () => {
+        //     return await axios.get(nextPage);
+        // });
+        const response = await axios.get(nextPage);
+
+        //console.log(response.data);
+        pageViews.push(...response.data);
         nextPage = pagination.getNextPage(response.headers.get('link'));
-    }
 
-    if (nextPage != false) {
-        pageNum++;
-        if (dupPage.includes(nextPage)) {
-            console.log('This is a dupe page');
-        } else {
-            dupPage.push(nextPage);
+        if (nextPage != false) {
+            pageNum++;
+            if (dupPage.includes(nextPage)) {
+                console.log('This is a dupe page');
+            } else {
+                dupPage.push(nextPage);
+            }
+
+
         }
-        pageViews = await getPageViews(user_id, nextPage, startDate, endDate, pageNum, dupPage);
+        // for (let view of response.data) {
+        //     pageViews.push(view);
+        // }
+    }
 
-    }
-    for (let view of response.data) {
-        pageViews.push(view);
-    }
+    csvExporter.exportToCSV(pageViews, `${user_id}_pageViews`)
     return pageViews;
 }
 
@@ -135,12 +130,15 @@ async function clearCourseUserCache(courseID) {
 }
 
 (async () => {
-    // const curDomain = await questionAsker.questionDetails('What domain: ');
+    const curDomain = await questionAsker.questionDetails('What domain: ');
     // const courseID = await questionAsker.questionDetails('What course: ');
+    const userID = await questionAsker.questionDetails('What user: ');
     // const number = await questionAsker.questionDetails('How many users do you want to create: ');
-    // questionAsker.close();
+    const startDate = await questionAsker.questionDetails('Start date (yyyy-mm-dd): ');
+    const endDate = await questionAsker.questionDetails('End date (yyyy-mm-dd): ');
+    questionAsker.close();
 
-    // axios.defaults.baseURL = `https://${curDomain}/api/v1`;
+    axios.defaults.baseURL = `https://${curDomain}/api/v1`;
 
 
     // for (let i = 0; i < numUsers; i++) {
@@ -157,9 +155,10 @@ async function clearCourseUserCache(courseID) {
     // console.log(myPageViews.length);
 
     // await clearCourseUserCache(2155);
-    //console.log('done');
+    await getPageViews(userID, startDate, endDate)
+    console.log('done');
 })();
 
-module.exports = {
-    getUsers, createUser, getPageViews
-};
+// module.exports = {
+//     getUsers, createUser, getPageViews
+// };

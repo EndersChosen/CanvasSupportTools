@@ -67,39 +67,44 @@ async function getAssignments(courseID) {
     console.log('Getting assignment(s)');
 
     let assignmentList = [];
-    let myURL;
-    if (isNaN(courseID))
-        myURL = courseID;
-    else
-        myURL = `courses/${courseID}/assignments?per_page=100`;
+    let myURL = `courses/${courseID}/assignments?per_page=100`;
 
-    try {
-        const response = await axios.get(myURL);
-        const nextPage = pagination.getNextPage(response.headers.get('link'));
-        if (nextPage !== false) {
-            assignmentList = await getAssignments(nextPage);
-        }
+    while (myURL) {
+        console.log('inside while', myURL);
+        try {
+            const response = await axios.get(myURL);
 
-        for (let assignment of response.data) {
-            assignmentList.push(assignment);
-        }
-    } catch (error) {
-        if (error.response) {
-            console.log(error.response.status);
-            console.log(error.response.headers);
-        } else if (error.request) {
-            console.log(error.request);
-        } else {
-            console.log('A different error', error.message);
+            if (response.headers.get('link')) {
+                myURL = pagination.getNextPage(response.headers.get('link'));
+            } else {
+                myURL = false;
+            }
+
+            for (let assignment of response.data) {
+                assignmentList.push(assignment);
+            }
+        } catch (error) {
+            console.log('there was an error');
+            if (error.response) {
+                console.log('error with response');
+                console.log(error.response.status);
+                console.log(error.response.headers);
+            } else if (error.request) {
+                console.log('error with request');
+                console.log(error.request);
+            } else {
+                console.log('A different error', error.message);
+            }
         }
     }
+
     return assignmentList;
 }
 
 async function deleteNoSubmissionAssignments(courseID) {
     console.log('Deleting assignments with no submissions');
 
-    let myURL = `courses/${courseID}/assignments`;
+    let myURL = `courses/${courseID}/assignments/`;
     let assignments = [];
 
     try {
@@ -144,7 +149,8 @@ async function deleteNoSubmissionAssignments(courseID) {
     //***********************************************
     for (let assignment of noSubmissionAssignments) {
         try {
-            await axios.delete(url + assignment.id);
+            console.log('deleting ', assignment.id);
+            await axios.delete(myURL + assignment.id);
         } catch (error) {
             console.log('The Error deleting the assignment is ', error);
         }
@@ -170,129 +176,117 @@ async function deleteAllAssignments(courseID, assignments) {
 
 
 // the function that does the stuff
-// (async () => {
-//     const curDomain = await questionAsker.questionDetails('What domain: ');
-//     const courseID = await questionAsker.questionDetails('What course: ');
-//     const number = await questionAsker.questionDetails('How many assignments do you want to create: ');
-//     questionAsker.close();
-
-//     axios.defaults.baseURL = `https://${curDomain}/api/v1`;
-
-//     await createAssignments(courseID, number);
-//     // // // const region = await getRegion();
-//     // // // if (region)
-//     // // //     removeFromSuppressionList(region, email)
-//     // // // else
-//     // // //     console.log('error with region');
-//     // // // await deleteNoSubmissionAssignments(2165);
-//     // // const assignments = await getAssignments(courseID);
-//     // // console.log(assignments.length);
-//     // // const filteredAssignments = assignments.filter((assignment) => {
-//     // //     if (assignment.name.match(/2013|2014|2015|2016|2017|2018|2019|2020|Fall|Spring|Contract|Shoplifting/)) {
-//     // //         return assignment;
-//     // //     }
-//     // // });
-//     // // console.log(filteredAssignments.length);
-
-//     // // ***************************************************
-//     // //
-//     // // DELETE ALL ASSIGNMENTS NOT IN MODULES
-//     // //
-//     // // ***************************************************
+(async () => {
+    const curDomain = await questionAsker.questionDetails('What domain: ');
+    const courseID = await questionAsker.questionDetails('What course: ');
+    //const number = await questionAsker.questionDetails('How many assignments do you want to create: ');
 
 
-//     // // const assignments = [];
-//     // // let query = `query myQuery($courseId: ID,$nextPage: String)  {
-//     // //             course(id: $courseId) {
-//     // //                     assignmentsConnection(
-//     // //                         first:500,
-//     // //                         after: $nextPage
-//     // //                     ){
-//     // //                         edges {
-//     // //     node {
-//     // //       name
-//     // //       _id
-//     // //       modules {
-//     // //         name
-//     // //       }
-//     // //       quiz {
-//     // //         modules {
-//     // //           name
-//     // //         }
-//     // //       }
-//     // //       discussion {
-//     // //         modules {
-//     // //           name
-//     // //         }
-//     // //       }
-//     // //     }
-//     // //   },
-//     // //                         pageInfo{
-//     // //                             endCursor,
-//     // //                             hasNextPage
-//     // //                         }
-//     // //                     }
-//     // //                 }
-//     // //             }`;
-//     // // let variables = { courseId: "5909", nextPage: "" };
+    axios.defaults.baseURL = `https://${curDomain}/api/v1/`;
+    //const myAssignments = await getAssignments(courseID);
 
-//     // // let next_page = true;
-//     // // let startTime = performance.now();
-//     // // while (next_page) {
-//     // //     const response = await fetch('https://mc3.instructure.com/api/graphql', {
-//     // //         method: "POST",
-//     // //         headers: {
-//     // //             "Authorization": `Bearer ${apiToken}`,
-//     // //             "Content-type": "application/json",
-//     // //             "Accept": "application/json"
-//     // //         },
-//     // //         body: JSON.stringify({
-//     // //             query,
-//     // //             variables: variables
-//     // //         })
-//     // //     });
+    await deleteNoSubmissionAssignments(courseID);
+    questionAsker.close();
 
-//     // //     const data = await response.json();
-//     // //     for (let assignment of data.data.course.assignmentsConnection.edges) {
-//     // //         assignments.push(assignment.node);
-//     // //     }
-//     // //     if (data.data.course.assignmentsConnection.pageInfo.hasNextPage) {
-//     // //         variables.nextPage = data.data.course.assignmentsConnection.pageInfo.endCursor
-//     // //     } else {
-//     // //         next_page = false;
-//     // //     }
-//     // // }
-//     // // let endTime = performance.now();
-//     // // console.log(`Total query time ${Math.floor(endTime - startTime) / 1000} seconds`);
-//     // // console.log(assignments.length);
-//     // // const filteredAssignments = assignments.filter((assignment) => {
-//     // //     if (assignment.quiz) {
-//     // //         if (assignment.quiz.modules.length < 1)
-//     // //             return assignment;
-//     // //     } else if (assignment.discussion) {
-//     // //         if (assignment.discussion.modules.length < 1)
-//     // //             return assignment;
-//     // //     } else if (assignment.modules.length < 1) {
-//     // //         //console.log(assignment);
-//     // //         return assignment;
-//     // //     }
-//     // // });
-//     // // console.log(filteredAssignments.length);
-//     // // //console.log(filteredAssignments);
-//     // // // for (let assignment of filteredAssignments) {
-//     // // //     console.log(assignment._id);
-//     // // // }
-//     // // await deleteAllAssignments(null, filteredAssignments)
+    //     // // ***************************************************
+    //     // //
+    //     // // DELETE ALL ASSIGNMENTS NOT IN MODULES
+    //     // //
+    //     // // ***************************************************
 
 
-//     // // *****************************************************
-//     // // 
-//     // // END OF DELETE ALL ASSIGNMENTS NOT IN MODULES
-//     // // 
-//     // // *****************************************************
-//     console.log('Done');
-// })();
+    //     // // const assignments = [];
+    //     // // let query = `query myQuery($courseId: ID,$nextPage: String)  {
+    //     // //             course(id: $courseId) {
+    //     // //                     assignmentsConnection(
+    //     // //                         first:500,
+    //     // //                         after: $nextPage
+    //     // //                     ){
+    //     // //                         edges {
+    //     // //     node {
+    //     // //       name
+    //     // //       _id
+    //     // //       modules {
+    //     // //         name
+    //     // //       }
+    //     // //       quiz {
+    //     // //         modules {
+    //     // //           name
+    //     // //         }
+    //     // //       }
+    //     // //       discussion {
+    //     // //         modules {
+    //     // //           name
+    //     // //         }
+    //     // //       }
+    //     // //     }
+    //     // //   },
+    //     // //                         pageInfo{
+    //     // //                             endCursor,
+    //     // //                             hasNextPage
+    //     // //                         }
+    //     // //                     }
+    //     // //                 }
+    //     // //             }`;
+    //     // // let variables = { courseId: "5909", nextPage: "" };
 
-module.exports = {
-    createAssignments, getAssignments, deleteNoSubmissionAssignments, deleteAllAssignments
-}
+    //     // // let next_page = true;
+    //     // // let startTime = performance.now();
+    //     // // while (next_page) {
+    //     // //     const response = await fetch('https://<domain>.instructure.com/api/graphql', {
+    //     // //         method: "POST",
+    //     // //         headers: {
+    //     // //             "Authorization": `Bearer ${apiToken}`,
+    //     // //             "Content-type": "application/json",
+    //     // //             "Accept": "application/json"
+    //     // //         },
+    //     // //         body: JSON.stringify({
+    //     // //             query,
+    //     // //             variables: variables
+    //     // //         })
+    //     // //     });
+
+    //     // //     const data = await response.json();
+    //     // //     for (let assignment of data.data.course.assignmentsConnection.edges) {
+    //     // //         assignments.push(assignment.node);
+    //     // //     }
+    //     // //     if (data.data.course.assignmentsConnection.pageInfo.hasNextPage) {
+    //     // //         variables.nextPage = data.data.course.assignmentsConnection.pageInfo.endCursor
+    //     // //     } else {
+    //     // //         next_page = false;
+    //     // //     }
+    //     // // }
+    //     // // let endTime = performance.now();
+    //     // // console.log(`Total query time ${Math.floor(endTime - startTime) / 1000} seconds`);
+    //     // // console.log(assignments.length);
+    //     // // const filteredAssignments = assignments.filter((assignment) => {
+    //     // //     if (assignment.quiz) {
+    //     // //         if (assignment.quiz.modules.length < 1)
+    //     // //             return assignment;
+    //     // //     } else if (assignment.discussion) {
+    //     // //         if (assignment.discussion.modules.length < 1)
+    //     // //             return assignment;
+    //     // //     } else if (assignment.modules.length < 1) {
+    //     // //         //console.log(assignment);
+    //     // //         return assignment;
+    //     // //     }
+    //     // // });
+    //     // // console.log(filteredAssignments.length);
+    //     // // //console.log(filteredAssignments);
+    //     // // // for (let assignment of filteredAssignments) {
+    //     // // //     console.log(assignment._id);
+    //     // // // }
+    //     // // await deleteAllAssignments(null, filteredAssignments)
+
+
+    //     // // *****************************************************
+    //     // //
+    //     // // END OF DELETE ALL ASSIGNMENTS NOT IN MODULES
+    //     // //
+    //     // // *****************************************************
+    console.log('Done');
+})();
+
+// module.exports = {
+//     createAssignments, getAssignments, deleteNoSubmissionAssignments, deleteAllAssignments
+// }

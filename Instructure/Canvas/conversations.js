@@ -7,34 +7,58 @@ const { deleteRequester } = require('../utilities');
 
 const axios = config.instance;
 
-async function getConversations(user, url = 'conversations', scope = 'inbox', conversations = [], pageCount = 0) {
+async function getConversations(user, scope = 'inbox') {
     console.log('Getting conversations: ');
 
-    let pageCounter = pageCount;
-    let myConversations = conversations;
-    let myURL = '';
-    if (url === 'conversations') {
-        myURL = `${url}?scope=${scope}&as_user_id=${user}&per_page=100`;
-    } else {
-        myURL = url;
+
+    let nextPage = `conversations?as_user_id=${user}&scope=${scope}&per_page=100`;
+
+    // let pageCounter = pageCount;
+    // let myConversations = conversations;
+    // let myURL = '';
+    // if (url === 'conversations') {
+    //     myURL = `${url}?scope=${scope}&as_user_id=${user}&per_page=100`;
+    // } else {
+    //     myURL = url;
+    // }
+
+    while (nextPage) {
+        try {
+            const response = await axios.get(myURL);
+            for (let message of response.data) {
+                myConversations.push(message);
+            }
+            let nextPage = pagination.getNextPage(response.headers.get('link'));
+            if (nextPage !== false) {
+                console.log('Page: ', pageCount);
+                pageCount++;
+                myConversations = await getConversations(user, nextPage, null, myConversations, pageCount);
+            } else {
+                console.log('Last page');
+            }
+        } catch (error) {
+            console.log('ERROR: ', error);
+        }
     }
 
-    try {
-        const response = await axios.get(myURL);
-        for (let message of response.data) {
-            myConversations.push(message);
-        }
-        let nextPage = pagination.getNextPage(response.headers.get('link'));
-        if (nextPage !== false) {
-            console.log('Page: ', pageCount);
-            pageCount++;
-            myConversations = await getConversations(user, nextPage, null, myConversations, pageCount);
-        } else {
-            console.log('Last page');
-        }
-    } catch (error) {
-        console.log('ERROR: ', error);
-    }
+
+
+    // try {
+    //     const response = await axios.get(myURL);
+    //     for (let message of response.data) {
+    //         myConversations.push(message);
+    //     }
+    //     let nextPage = pagination.getNextPage(response.headers.get('link'));
+    //     if (nextPage !== false) {
+    //         console.log('Page: ', pageCount);
+    //         pageCount++;
+    //         myConversations = await getConversations(user, nextPage, null, myConversations, pageCount);
+    //     } else {
+    //         console.log('Last page');
+    //     }
+    // } catch (error) {
+    //     console.log('ERROR: ', error);
+    // }
 
     return myConversations;
 }
@@ -151,18 +175,27 @@ async function bulkDelete(userID, messageFilter) {
     questionAsker.close();
 }
 
+async function getConvos2(user1, user2, deleted = true) {
+    const user1Convos = await getConversations(user1);
+
+}
+
 (async () => {
     // let theConversations = await getConversations(26);
     // console.log('My user had this many', theConversations.length);
 
     //await deleteForAll(1466);
 
-    let curDomain = await questionAsker.questionDetails('What Domain: ');
-    let user = await questionAsker.questionDetails('What user: ');
-    let filter = await questionAsker.questionDetails('What subject: ');
+    // let curDomain = await questionAsker.questionDetails('What Domain: ');
+    // let user1 = await questionAsker.questionDetails('First user: ');
+    // let user2 = await questionAsker.questionDetails('Second user: ');
 
-    axios.defaults.baseURL = `https://${curDomain}/api/v1`;
-    await bulkDelete(user, filter)
+    //let user = await questionAsker.questionDetails('What user: ');
+    //let filter = await questionAsker.questionDetails('What subject: ');
+
+    //axios.defaults.baseURL = `https://${curDomain}/api/v1/`;
+    //await bulkDelete(user, filter)
+    await getConvos2(26, 10);
     console.log('finished');
     questionAsker.close();
 })();

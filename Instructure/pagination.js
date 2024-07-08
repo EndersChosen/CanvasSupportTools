@@ -1,8 +1,6 @@
 // uses the 'link' header response to find
 // the 'next' page of api respones
 function getNextPage(links) {
-
-
     const arrayLinks = links.split(',');
     const json = arrayLinks.map(element => {
         const [link, rel] = element.split(';');

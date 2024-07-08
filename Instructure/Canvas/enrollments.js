@@ -3,6 +3,7 @@ const config = require('./config');
 const users = require('./users');
 const error_check = require('../error_check');
 const questionAsker = require('../questionAsker');
+const pagination = require('../pagination');
 
 const axios = config.instance;
 
@@ -63,20 +64,74 @@ function updateEnrollParams(userID, role) {
     enrollData.enrollment.type = role;
 }
 
+// remove all enrollments from a user
+async function removeEnrollments(user) {
+
+    const enrollments = await getEnrollments(user);
+
+    const failed = [];
+
+    for (let enroll of enrollments) {
+        console.log(`Deleting enrollment ${enroll.id} for ${enroll.course_id}`);
+        let url = `/courses/${enroll.course_id}/enrollments/${enroll.id}?task=delete`;
+        try {
+            await axios.delete(url);
+        } catch {
+            console.log('Error deleting enrollment');
+            failed.push(enroll);
+        }
+    }
+    console.log('enrollments removed');
+    if (failed.length > 0) {
+        console.log('Failed to delete the following enrollments');
+        console.log(failed);
+    }
+}
+
+// get all enrollments for a user
+async function getEnrollments(user) {
+
+    let url = `/users/${user}/enrollments?state[]=active&state[]=invited&state[]=completed&state[]=inactive`;
+    const enrollments = await apiRunner(url);
+
+    return enrollments;
+}
+
+async function apiRunner(url) {
+    const apiData = [];
+
+    do {
+        const res = await axios.get(url);
+        apiData.push(...res.data);
+        url = pagination.getNextPage(res.headers.link);
+    } while (url);
+
+    return apiData;
+}
 // asking the important questions
 (async () => {
-    const curDomain = await questionAsker.questionDetails('What domain: ');
-    const courseID = await questionAsker.questionDetails('What course: ');
-    const number = await questionAsker.questionDetails('How many users do you want to enroll: ');
+    // const curDomain = await questionAsker.questionDetails('What domain: ');
+    // const courseID = await questionAsker.questionDetails('What course: ');
+    // const number = await questionAsker.questionDetails('How many users do you want to enroll: ');
     // const type = await questionAsker.questionDetails('What type of user do you want to enroll (Teacher/Ta/Student): ');
-    questionAsker.close();
+    // questionAsker.close();
+
+    const curDomain = 'ckruger.instructure.com';
+    const courseID = 2;
+    const number = 1;
+    const user = '170000004596731';
 
     axios.defaults.baseURL = `https://${curDomain}/api/v1`;
 
-    const enrolled = await enrollUser(courseID, number);
-    console.log('enrolled ', enrolled.length);
+    await removeEnrollments(user);
 
     console.log('Done');
+    // console.log('Total enrollments ', enrollments.length);
+    // console.log('First enrollment', enrollments[0]);
+    // const enrolled = await enrollUser(courseID, number);
+    // console.log('enrolled ', enrolled.length);
+
+
 })();
 
 // module.exports = {

@@ -129,35 +129,35 @@ async function clearCourseUserCache(courseID) {
     return;
 }
 
-(async () => {
-    const curDomain = await questionAsker.questionDetails('What domain: ');
-    // const courseID = await questionAsker.questionDetails('What course: ');
-    const userID = await questionAsker.questionDetails('What user: ');
-    // const number = await questionAsker.questionDetails('How many users do you want to create: ');
-    const startDate = await questionAsker.questionDetails('Start date (yyyy-mm-dd): ');
-    const endDate = await questionAsker.questionDetails('End date (yyyy-mm-dd): ');
-    questionAsker.close();
+// (async () => {
+//     const curDomain = await questionAsker.questionDetails('What domain: ');
+//     // const courseID = await questionAsker.questionDetails('What course: ');
+//     const userID = await questionAsker.questionDetails('What user: ');
+//     // const number = await questionAsker.questionDetails('How many users do you want to create: ');
+//     const startDate = await questionAsker.questionDetails('Start date (yyyy-mm-dd): ');
+//     const endDate = await questionAsker.questionDetails('End date (yyyy-mm-dd): ');
+//     questionAsker.close();
 
-    axios.defaults.baseURL = `https://${curDomain}/api/v1`;
+//     axios.defaults.baseURL = `https://${curDomain}/api/v1`;
 
 
-    // for (let i = 0; i < numUsers; i++) {
-    //     let user = await createUser();
-    //     console.log(user.id);
-    // }
-    // let myUsers = await getUsers(2155);
-    // console.log(myUsers.length);
+//     // for (let i = 0; i < numUsers; i++) {
+//     //     let user = await createUser();
+//     //     console.log(user.id);
+//     // }
+//     // let myUsers = await getUsers(2155);
+//     // console.log(myUsers.length);
 
-    // let myPageViews = await getPageViews(26, null,
-    //     '2023-02-15T07:00:00.000', '2023-02-16T07:00:00.000');
-    // console.log(`${myPageViews.length} Page views`);
-    // csvExporter.exportToCSV(myPageViews);
-    // console.log(myPageViews.length);
+//     // let myPageViews = await getPageViews(26, null,
+//     //     '2023-02-15T07:00:00.000', '2023-02-16T07:00:00.000');
+//     // console.log(`${myPageViews.length} Page views`);
+//     // csvExporter.exportToCSV(myPageViews);
+//     // console.log(myPageViews.length);
 
-    // await clearCourseUserCache(2155);
-    await getPageViews(userID, startDate, endDate)
-    console.log('done');
-})();
+//     // await clearCourseUserCache(2155);
+//     await getPageViews(userID, startDate, endDate)
+//     console.log('done');
+// })();
 
 // module.exports = {
 //     getUsers, createUser, getPageViews

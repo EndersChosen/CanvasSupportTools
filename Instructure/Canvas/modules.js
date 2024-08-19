@@ -115,25 +115,29 @@ async function getUserProgress(CourseId) {
     return incompleteUsers;
 }
 
-(async () => {
-    let curDomain = await questionAsker.questionDetails('What Domain: ');
-    let course = await questionAsker.questionDetails('What course: ');
+// (async () => {
+//     let curDomain = await questionAsker.questionDetails('What Domain: ');
+//     let course = await questionAsker.questionDetails('What course: ');
 
 
-    axios.defaults.baseURL = `https://${curDomain}/api/v1`;
-    let myUsers = await getUserProgress(course);
-    console.log('finished');
-    console.log(myUsers.length);
-    questionAsker.close();
-    // let newModules = await createModule(6006, 34);
-    // console.log(newModules);
+//     axios.defaults.baseURL = `https://${curDomain}/api/v1`;
+//     let myUsers = await getUserProgress(course);
+//     console.log('finished');
+//     console.log(myUsers.length);
+//     questionAsker.close();
+//     // let newModules = await createModule(6006, 34);
+//     // console.log(newModules);
 
-    // let myModules = await getModules(6006)
-    // console.log(myModules.length);
+//     // let myModules = await getModules(6006)
+//     // console.log(myModules.length);
 
-    // await deleteAllModules(6006);
-    // console.log('Completed');
+//     // await deleteAllModules(6006);
+//     // console.log('Completed');
 
-    // await deleteEmptyModules(6006);
-    // console.log('Completed');
-})();
+//     // await deleteEmptyModules(6006);
+//     // console.log('Completed');
+// })();
+
+module.exports = {
+    createModule, getModules, deleteAllModules, deleteEmptyModules, getUserProgress
+};

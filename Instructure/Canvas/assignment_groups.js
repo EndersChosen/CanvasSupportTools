@@ -10,6 +10,7 @@
 const config = require('./config.js');
 const pagination = require('../pagination.js');
 const questionAsker = require('../questionAsker');
+const { getAssignments } = require('./assignments.js');
 
 
 const axios = config.instance;
@@ -110,23 +111,58 @@ async function deleteEmptyAssignmentGroups(course) {
     }
 }
 
-(async () => {
-    const curDomain = await questionAsker.questionDetails('What domain: ');
-    const courseID = await questionAsker.questionDetails('What course: ');
-    //const number = await questionAsker.questionDetails('How many assignments do you want to create: ');
-    questionAsker.close();
+// moves all assignments to the assignment group obtained from the first assignment
+async function moveToAssignmentGroupAll(course) {
+    // get all assignments in the course
+    // move the assignment to the assignment group
 
-    axios.defaults.baseURL = `https://${curDomain}/api/v1`;
 
-    // await createAssignmentGroups(`courses/${theCourse}/assignment_groups`, {}, 10);
-    // let myAssignmentGroups = await getAssignmentGroups(`courses/${theCourse}/assignment_groups`);
-    // console.log(myAssignmentGroups.length);
+    const assignments = await getAssignments(course);
+    const firstAssignmentGroup = assignments[0].assignment_group_id; // used as the default assignment group to move all others to
 
-    await deleteEmptyAssignmentGroups(courseID);
+    startTime = performance.now();
+    for (let assignment of assignments) {
+        console.log(`Moving assignment ${assignment.id} to assignment group ${firstAssignmentGroup}`);
+        let url = `/courses/${course}/assignments/${assignment.id}`;
+        let params = {
+            assignment: {
+                assignment_group_id: firstAssignmentGroup
+            }
+        };
 
-    console.log('Done.');
-})();
+        try {
+            const response = await axios.put(url, params);
+        } catch (error) {
+            if (error.response) {
+                console.log(error.response);
+            } else if (error.request) {
+                console.log(error.request);
+            } else {
+                console.log('Something else happened');
+            }
+        }
+    }
+    endTime = performance.now();
+    console.log(`Moved ${assignments.length} assignments to the assignemnt group id of ${firstAssignmentGroup} in ${Math.floor(endTime - startTime) / 1000} seconds.`);
+}
 
-// module.exports = {
-//     createAssignmentGroups, getAssignmentGroups, deleteEmptyAssignmentGroups
-// }
+// (async () => {
+//     const curDomain = await questionAsker.questionDetails('What domain: ');
+//     const courseID = await questionAsker.questionDetails('What course: ');
+//     //const number = await questionAsker.questionDetails('How many assignments do you want to create: ');
+//     questionAsker.close();
+
+//     axios.defaults.baseURL = `https://${curDomain}/api/v1`;
+
+//     // await createAssignmentGroups(`courses/${theCourse}/assignment_groups`, {}, 10);
+//     // let myAssignmentGroups = await getAssignmentGroups(`courses/${theCourse}/assignment_groups`);
+//     // console.log(myAssignmentGroups.length);
+
+//     await deleteEmptyAssignmentGroups(courseID);
+
+//     console.log('Done.');
+// })();
+
+module.exports = {
+    createAssignmentGroups, getAssignmentGroups, deleteEmptyAssignmentGroups, moveToAssignmentGroupAll
+}

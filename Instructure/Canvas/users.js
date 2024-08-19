@@ -129,6 +129,19 @@ async function clearCourseUserCache(courseID) {
     return;
 }
 
+async function dueDateCacher(courseID) {
+    console.log('Caching due dates for course', courseID);
+
+    let url = `/support_helpers/submission_lifecycle_manage/course?course_id=${courseID}`;
+
+    try {
+        await axios.get(url);
+    } catch (error) {
+        console.log('Error running due date cacher', error.message);
+    }
+    return;
+}
+
 // (async () => {
 //     const curDomain = await questionAsker.questionDetails('What domain: ');
 //     // const courseID = await questionAsker.questionDetails('What course: ');
@@ -159,6 +172,6 @@ async function clearCourseUserCache(courseID) {
 //     console.log('done');
 // })();
 
-// module.exports = {
-//     getUsers, createUser, getPageViews
-// };
+module.exports = {
+    getUsers, createUser, getPageViews, dueDateCacher
+};

@@ -108,32 +108,33 @@ async function apiRunner(url) {
 
     return apiData;
 }
+
 // asking the important questions
-(async () => {
-    // const curDomain = await questionAsker.questionDetails('What domain: ');
-    // const courseID = await questionAsker.questionDetails('What course: ');
-    // const number = await questionAsker.questionDetails('How many users do you want to enroll: ');
-    // const type = await questionAsker.questionDetails('What type of user do you want to enroll (Teacher/Ta/Student): ');
-    // questionAsker.close();
+// (async () => {
+//     // const curDomain = await questionAsker.questionDetails('What domain: ');
+//     // const courseID = await questionAsker.questionDetails('What course: ');
+//     // const number = await questionAsker.questionDetails('How many users do you want to enroll: ');
+//     // const type = await questionAsker.questionDetails('What type of user do you want to enroll (Teacher/Ta/Student): ');
+//     // questionAsker.close();
 
-    const curDomain = 'ckruger.instructure.com';
-    const courseID = 2;
-    const number = 1;
-    const user = '170000004596731';
+//     const curDomain = 'ckruger.instructure.com';
+//     const courseID = 2;
+//     const number = 1;
+//     const user = '170000004596731';
 
-    axios.defaults.baseURL = `https://${curDomain}/api/v1`;
+//     axios.defaults.baseURL = `https://${curDomain}/api/v1`;
 
-    await removeEnrollments(user);
+//     await removeEnrollments(user);
 
-    console.log('Done');
-    // console.log('Total enrollments ', enrollments.length);
-    // console.log('First enrollment', enrollments[0]);
-    // const enrolled = await enrollUser(courseID, number);
-    // console.log('enrolled ', enrolled.length);
+//     console.log('Done');
+//     // console.log('Total enrollments ', enrollments.length);
+//     // console.log('First enrollment', enrollments[0]);
+//     // const enrolled = await enrollUser(courseID, number);
+//     // console.log('enrolled ', enrolled.length);
 
 
-})();
+// })();
 
-// module.exports = {
-//     enrollUser
-// };
+module.exports = {
+    enrollUser
+};

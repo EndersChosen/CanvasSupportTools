@@ -62,17 +62,23 @@ async function deletePage(pageID) {
 
 }
 
-(async () => {
-    // let theCourse = await questionAsker.questionDetails('Which course do you want to get pages from?\n');
+// (async () => {
+//     // let theCourse = await questionAsker.questionDetails('Which course do you want to get pages from?\n');
 
-    // let myPages = await getAllPages(`courses/${theCourse}/pages?per_page=100`);
-    // console.log(myPages.length);
+//     // let myPages = await getAllPages(`courses/${theCourse}/pages?per_page=100`);
+//     // console.log(myPages.length);
 
-    // let numPages = await questionAsker.questionDetails('How many pages do you want to make?\n');
-    // for (let i = 0; i < numPages; i++)
-    //     await createWikiPage(6005);
-    // console.log('Finished creating pages');
+//     // let numPages = await questionAsker.questionDetails('How many pages do you want to make?\n');
+//     // for (let i = 0; i < numPages; i++)
+//     //     await createWikiPage(6005);
+//     // console.log('Finished creating pages');
 
-    // console.log(await updatePage(6005, 8788, { wiki_page: { title: 'My updated title' } }));
-    questionAsker.close();
-})();
+//     // console.log(await updatePage(6005, 8788, { wiki_page: { title: 'My updated title' } }));
+//     questionAsker.close();
+// })();
+
+module.exports = {
+    createWikiPage,
+    getAllPages,
+    updatePage
+};

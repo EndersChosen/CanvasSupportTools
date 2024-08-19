@@ -96,16 +96,16 @@ async function deleteClassicQuiz(courseID, quizID) {
     return response.data;
 }
 
-(async () => {
-    // console.log(await createClassicQuiz(6005, 41));
-    // console.log('Deleted quiz', await deleteClassicQuiz(6005, 5828));
+// (async () => {
+//     // console.log(await createClassicQuiz(6005, 41));
+//     // console.log('Deleted quiz', await deleteClassicQuiz(6005, 5828));
 
-    // let theQuizzes = await getClassicQuiz(6005);
-    // console.log(theQuizzes.length);
+//     // let theQuizzes = await getClassicQuiz(6005);
+//     // console.log(theQuizzes.length);
 
 
-})();
+// })();
 
-// module.exports = {
-//     createClassicQuiz,editClassicQuiz,getClassicQuiz,deleteClassicQuiz
-// };
+module.exports = {
+    createClassicQuiz, getClassicQuiz, deleteClassicQuiz
+};

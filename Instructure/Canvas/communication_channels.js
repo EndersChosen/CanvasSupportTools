@@ -37,15 +37,17 @@ async function removeFromSuppressionList(region, email) {
     return
 }
 
-(async () => {
-    let curDomain = await questionAsker.questionDetails('What domain: ');
-    const email = await questionAsker.questionDetails('What email: ');
-    questionAsker.close();
+// (async () => {
+//     let curDomain = await questionAsker.questionDetails('What domain: ');
+//     const email = await questionAsker.questionDetails('What email: ');
+//     questionAsker.close();
 
-    axios.defaults.baseURL = `https://${curDomain}/api/v1`;
-    const region = await getRegion();
-    if (region)
-        removeFromSuppressionList(region, email)
-    else
-        console.log('error with region');
-})();
+//     axios.defaults.baseURL = `https://${curDomain}/api/v1`;
+//     const region = await getRegion();
+//     if (region)
+//         removeFromSuppressionList(region, email)
+//     else
+//         console.log('error with region');
+// })();
+
+module.exports = { removeFromSuppressionList };

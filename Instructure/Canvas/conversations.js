@@ -63,12 +63,14 @@ async function getConversations(user, scope = 'inbox') {
     return myConversations;
 }
 
+// deletes a single conversation for all users
 async function deleteForAll(conversationID) {
     console.log('Deleting conversation: ', conversationID);
     let myURL = `conversations/${conversationID}/delete_for_all`;
     await axios.delete(myURL);
 }
 
+// deletes all messages sent to or from a user based on a filter string (subject)
 async function bulkDelete(userID, messageFilter) {
     let allConversations = [];
 
@@ -180,26 +182,26 @@ async function getConvos2(user1, user2, deleted = true) {
 
 }
 
-(async () => {
-    // let theConversations = await getConversations(26);
-    // console.log('My user had this many', theConversations.length);
+// (async () => {
+//     // let theConversations = await getConversations(26);
+//     // console.log('My user had this many', theConversations.length);
 
-    //await deleteForAll(1466);
+//     //await deleteForAll(1466);
 
-    // let curDomain = await questionAsker.questionDetails('What Domain: ');
-    // let user1 = await questionAsker.questionDetails('First user: ');
-    // let user2 = await questionAsker.questionDetails('Second user: ');
+//     // let curDomain = await questionAsker.questionDetails('What Domain: ');
+//     // let user1 = await questionAsker.questionDetails('First user: ');
+//     // let user2 = await questionAsker.questionDetails('Second user: ');
 
-    //let user = await questionAsker.questionDetails('What user: ');
-    //let filter = await questionAsker.questionDetails('What subject: ');
+//     //let user = await questionAsker.questionDetails('What user: ');
+//     //let filter = await questionAsker.questionDetails('What subject: ');
 
-    //axios.defaults.baseURL = `https://${curDomain}/api/v1/`;
-    //await bulkDelete(user, filter)
-    await getConvos2(26, 10);
-    console.log('finished');
-    questionAsker.close();
-})();
+//     //axios.defaults.baseURL = `https://${curDomain}/api/v1/`;
+//     //await bulkDelete(user, filter)
+//     await getConvos2(26, 10);
+//     console.log('finished');
+//     questionAsker.close();
+// })();
 
-// modules.export = {
-//     getConversations, bulkDelete, deleteForAll
-// };
+module.exports = {
+    getConversations, bulkDelete, deleteForAll
+};
